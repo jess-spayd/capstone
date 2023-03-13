@@ -3,19 +3,19 @@
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "fe8979c9",
+   "id": "67bd75fd",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2023-03-13T19:57:49.027811Z",
-     "iopub.status.busy": "2023-03-13T19:57:49.025337Z",
-     "iopub.status.idle": "2023-03-13T19:57:50.663845Z",
-     "shell.execute_reply": "2023-03-13T19:57:50.661866Z"
+     "iopub.execute_input": "2023-03-13T20:13:15.698713Z",
+     "iopub.status.busy": "2023-03-13T20:13:15.696192Z",
+     "iopub.status.idle": "2023-03-13T20:13:17.300789Z",
+     "shell.execute_reply": "2023-03-13T20:13:17.298894Z"
     },
     "papermill": {
-     "duration": 1.645859,
-     "end_time": "2023-03-13T19:57:50.666430",
+     "duration": 1.612656,
+     "end_time": "2023-03-13T20:13:17.303847",
      "exception": false,
-     "start_time": "2023-03-13T19:57:49.020571",
+     "start_time": "2023-03-13T20:13:15.691191",
      "status": "completed"
     },
     "tags": []
@@ -43,19 +43,19 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "5a9aa588",
+   "id": "55372134",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2023-03-13T19:57:50.703080Z",
-     "iopub.status.busy": "2023-03-13T19:57:50.671980Z",
-     "iopub.status.idle": "2023-03-13T19:58:23.126801Z",
-     "shell.execute_reply": "2023-03-13T19:58:23.124580Z"
+     "iopub.execute_input": "2023-03-13T20:13:17.342276Z",
+     "iopub.status.busy": "2023-03-13T20:13:17.311157Z",
+     "iopub.status.idle": "2023-03-13T20:13:51.398651Z",
+     "shell.execute_reply": "2023-03-13T20:13:51.396424Z"
     },
     "papermill": {
-     "duration": 32.461372,
-     "end_time": "2023-03-13T19:58:23.129942",
+     "duration": 34.095926,
+     "end_time": "2023-03-13T20:13:51.402620",
      "exception": false,
-     "start_time": "2023-03-13T19:57:50.668570",
+     "start_time": "2023-03-13T20:13:17.306694",
      "status": "completed"
     },
     "tags": []
@@ -83,19 +83,19 @@
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "3fd1389d",
+   "id": "c4a21387",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2023-03-13T19:58:23.138249Z",
-     "iopub.status.busy": "2023-03-13T19:58:23.136659Z",
-     "iopub.status.idle": "2023-03-13T19:58:23.150078Z",
-     "shell.execute_reply": "2023-03-13T19:58:23.148163Z"
+     "iopub.execute_input": "2023-03-13T20:13:51.411691Z",
+     "iopub.status.busy": "2023-03-13T20:13:51.409949Z",
+     "iopub.status.idle": "2023-03-13T20:13:51.423310Z",
+     "shell.execute_reply": "2023-03-13T20:13:51.421451Z"
     },
     "papermill": {
-     "duration": 0.020514,
-     "end_time": "2023-03-13T19:58:23.152877",
+     "duration": 0.020354,
+     "end_time": "2023-03-13T20:13:51.425710",
      "exception": false,
-     "start_time": "2023-03-13T19:58:23.132363",
+     "start_time": "2023-03-13T20:13:51.405356",
      "status": "completed"
     },
     "tags": []
@@ -104,6 +104,200 @@
    "source": [
     "#data_check <- select(data, MEDICARE)\n",
     "#head(data_check)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "cbf1dcb9",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-03-13T20:13:51.435009Z",
+     "iopub.status.busy": "2023-03-13T20:13:51.433246Z",
+     "iopub.status.idle": "2023-03-13T20:13:51.543215Z",
+     "shell.execute_reply": "2023-03-13T20:13:51.541160Z"
+    },
+    "papermill": {
+     "duration": 0.118892,
+     "end_time": "2023-03-13T20:13:51.547326",
+     "exception": false,
+     "start_time": "2023-03-13T20:13:51.428434",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "data <- select(data,\n",
+    "            MEDICARE,\n",
+    "            CAIDCHIP,\n",
+    "            CHAMPUS,\n",
+    "            PRVHLTIN,\n",
+    "            GRPHLTIN,\n",
+    "            HLTINALC,\n",
+    "            HLTINDRG,\n",
+    "            HLTINMNT,\n",
+    "            HLTINNOS,\n",
+    "            AMHINP2,\n",
+    "            AMHOUTP4,\n",
+    "            AMHRX2,\n",
+    "            AMHTXRC4,\n",
+    "            AUMHTELYR2,\n",
+    "            AMHTXYR4,\n",
+    "            AMHSVTYP4,\n",
+    "            AMHTXND2,\n",
+    "            AUUNMTYR,\n",
+    "            AUUNCOST,\n",
+    "            AUUNNCOV,\n",
+    "            AUUNENUF,\n",
+    "            AGE3,\n",
+    "            SERVICE,\n",
+    "            SEXATRACT,\n",
+    "            SEXIDENT,\n",
+    "            SPEAKENGL,\n",
+    "            LVLDIFSEE2,\n",
+    "            LVLDIFHEAR2,\n",
+    "            LVLDIFWALK2,\n",
+    "            LVLDIFMEM2,\n",
+    "            LVLDIFCARE2,\n",
+    "            LVLDIFCOMM2,\n",
+    "            IRSEX,\n",
+    "            IRMARIT,\n",
+    "            IREDUHIGHST2,\n",
+    "            EDUHIGHCAT,\n",
+    "            NEWRACE2,\n",
+    "            HEALTH,\n",
+    "            ENRLCOLLST2,\n",
+    "            IRWRKSTAT18,\n",
+    "            GOVTPROG,\n",
+    "            INCOME, \n",
+    "            PDEN10, \n",
+    "            COUTYP4)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "bd37a2bc",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-03-13T20:13:51.556144Z",
+     "iopub.status.busy": "2023-03-13T20:13:51.554501Z",
+     "iopub.status.idle": "2023-03-13T20:13:51.616151Z",
+     "shell.execute_reply": "2023-03-13T20:13:51.613504Z"
+    },
+    "papermill": {
+     "duration": 0.068858,
+     "end_time": "2023-03-13T20:13:51.619033",
+     "exception": false,
+     "start_time": "2023-03-13T20:13:51.550175",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<table class=\"dataframe\">\n",
+       "<caption>A tibble: 6 × 44</caption>\n",
+       "<thead>\n",
+       "\t<tr><th scope=col>MEDICARE</th><th scope=col>CAIDCHIP</th><th scope=col>CHAMPUS</th><th scope=col>PRVHLTIN</th><th scope=col>GRPHLTIN</th><th scope=col>HLTINALC</th><th scope=col>HLTINDRG</th><th scope=col>HLTINMNT</th><th scope=col>HLTINNOS</th><th scope=col>AMHINP2</th><th scope=col>⋯</th><th scope=col>IREDUHIGHST2</th><th scope=col>EDUHIGHCAT</th><th scope=col>NEWRACE2</th><th scope=col>HEALTH</th><th scope=col>ENRLCOLLST2</th><th scope=col>IRWRKSTAT18</th><th scope=col>GOVTPROG</th><th scope=col>INCOME</th><th scope=col>PDEN10</th><th scope=col>COUTYP4</th></tr>\n",
+       "\t<tr><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>⋯</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>\n",
+       "</thead>\n",
+       "<tbody>\n",
+       "\t<tr><td>1</td><td>2</td><td>2</td><td>2</td><td>99</td><td>99</td><td>99</td><td>99</td><td>99</td><td>2</td><td>⋯</td><td> 9</td><td>3</td><td>1</td><td>4</td><td>5</td><td>4</td><td>1</td><td>1</td><td>2</td><td>3</td></tr>\n",
+       "\t<tr><td>1</td><td>2</td><td>2</td><td>1</td><td> 2</td><td> 1</td><td> 1</td><td> 1</td><td>99</td><td>2</td><td>⋯</td><td>11</td><td>4</td><td>1</td><td>3</td><td>5</td><td>4</td><td>2</td><td>4</td><td>1</td><td>1</td></tr>\n",
+       "\t<tr><td>2</td><td>2</td><td>2</td><td>1</td><td> 1</td><td> 2</td><td> 2</td><td> 2</td><td>99</td><td>2</td><td>⋯</td><td>11</td><td>4</td><td>1</td><td>2</td><td>5</td><td>1</td><td>2</td><td>2</td><td>2</td><td>2</td></tr>\n",
+       "\t<tr><td>2</td><td>1</td><td>2</td><td>2</td><td>99</td><td>99</td><td>99</td><td>99</td><td>99</td><td>2</td><td>⋯</td><td> 6</td><td>1</td><td>1</td><td>2</td><td>5</td><td>4</td><td>2</td><td>2</td><td>1</td><td>1</td></tr>\n",
+       "\t<tr><td>2</td><td>2</td><td>2</td><td>2</td><td>99</td><td>99</td><td>99</td><td>99</td><td> 2</td><td>2</td><td>⋯</td><td> 8</td><td>2</td><td>7</td><td>1</td><td>5</td><td>4</td><td>2</td><td>1</td><td>1</td><td>1</td></tr>\n",
+       "\t<tr><td>2</td><td>2</td><td>2</td><td>1</td><td> 2</td><td>94</td><td> 1</td><td> 1</td><td>99</td><td>2</td><td>⋯</td><td> 4</td><td>1</td><td>7</td><td>3</td><td>5</td><td>4</td><td>2</td><td>3</td><td>1</td><td>1</td></tr>\n",
+       "</tbody>\n",
+       "</table>\n"
+      ],
+      "text/latex": [
+       "A tibble: 6 × 44\n",
+       "\\begin{tabular}{lllllllllllllllllllll}\n",
+       " MEDICARE & CAIDCHIP & CHAMPUS & PRVHLTIN & GRPHLTIN & HLTINALC & HLTINDRG & HLTINMNT & HLTINNOS & AMHINP2 & ⋯ & IREDUHIGHST2 & EDUHIGHCAT & NEWRACE2 & HEALTH & ENRLCOLLST2 & IRWRKSTAT18 & GOVTPROG & INCOME & PDEN10 & COUTYP4\\\\\n",
+       " <dbl> & <dbl> & <dbl> & <dbl> & <dbl> & <dbl> & <dbl> & <dbl> & <dbl> & <dbl> & ⋯ & <dbl> & <dbl> & <dbl> & <dbl> & <dbl> & <dbl> & <dbl> & <dbl> & <dbl> & <dbl>\\\\\n",
+       "\\hline\n",
+       "\t 1 & 2 & 2 & 2 & 99 & 99 & 99 & 99 & 99 & 2 & ⋯ &  9 & 3 & 1 & 4 & 5 & 4 & 1 & 1 & 2 & 3\\\\\n",
+       "\t 1 & 2 & 2 & 1 &  2 &  1 &  1 &  1 & 99 & 2 & ⋯ & 11 & 4 & 1 & 3 & 5 & 4 & 2 & 4 & 1 & 1\\\\\n",
+       "\t 2 & 2 & 2 & 1 &  1 &  2 &  2 &  2 & 99 & 2 & ⋯ & 11 & 4 & 1 & 2 & 5 & 1 & 2 & 2 & 2 & 2\\\\\n",
+       "\t 2 & 1 & 2 & 2 & 99 & 99 & 99 & 99 & 99 & 2 & ⋯ &  6 & 1 & 1 & 2 & 5 & 4 & 2 & 2 & 1 & 1\\\\\n",
+       "\t 2 & 2 & 2 & 2 & 99 & 99 & 99 & 99 &  2 & 2 & ⋯ &  8 & 2 & 7 & 1 & 5 & 4 & 2 & 1 & 1 & 1\\\\\n",
+       "\t 2 & 2 & 2 & 1 &  2 & 94 &  1 &  1 & 99 & 2 & ⋯ &  4 & 1 & 7 & 3 & 5 & 4 & 2 & 3 & 1 & 1\\\\\n",
+       "\\end{tabular}\n"
+      ],
+      "text/markdown": [
+       "\n",
+       "A tibble: 6 × 44\n",
+       "\n",
+       "| MEDICARE &lt;dbl&gt; | CAIDCHIP &lt;dbl&gt; | CHAMPUS &lt;dbl&gt; | PRVHLTIN &lt;dbl&gt; | GRPHLTIN &lt;dbl&gt; | HLTINALC &lt;dbl&gt; | HLTINDRG &lt;dbl&gt; | HLTINMNT &lt;dbl&gt; | HLTINNOS &lt;dbl&gt; | AMHINP2 &lt;dbl&gt; | ⋯ ⋯ | IREDUHIGHST2 &lt;dbl&gt; | EDUHIGHCAT &lt;dbl&gt; | NEWRACE2 &lt;dbl&gt; | HEALTH &lt;dbl&gt; | ENRLCOLLST2 &lt;dbl&gt; | IRWRKSTAT18 &lt;dbl&gt; | GOVTPROG &lt;dbl&gt; | INCOME &lt;dbl&gt; | PDEN10 &lt;dbl&gt; | COUTYP4 &lt;dbl&gt; |\n",
+       "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n",
+       "| 1 | 2 | 2 | 2 | 99 | 99 | 99 | 99 | 99 | 2 | ⋯ |  9 | 3 | 1 | 4 | 5 | 4 | 1 | 1 | 2 | 3 |\n",
+       "| 1 | 2 | 2 | 1 |  2 |  1 |  1 |  1 | 99 | 2 | ⋯ | 11 | 4 | 1 | 3 | 5 | 4 | 2 | 4 | 1 | 1 |\n",
+       "| 2 | 2 | 2 | 1 |  1 |  2 |  2 |  2 | 99 | 2 | ⋯ | 11 | 4 | 1 | 2 | 5 | 1 | 2 | 2 | 2 | 2 |\n",
+       "| 2 | 1 | 2 | 2 | 99 | 99 | 99 | 99 | 99 | 2 | ⋯ |  6 | 1 | 1 | 2 | 5 | 4 | 2 | 2 | 1 | 1 |\n",
+       "| 2 | 2 | 2 | 2 | 99 | 99 | 99 | 99 |  2 | 2 | ⋯ |  8 | 2 | 7 | 1 | 5 | 4 | 2 | 1 | 1 | 1 |\n",
+       "| 2 | 2 | 2 | 1 |  2 | 94 |  1 |  1 | 99 | 2 | ⋯ |  4 | 1 | 7 | 3 | 5 | 4 | 2 | 3 | 1 | 1 |\n",
+       "\n"
+      ],
+      "text/plain": [
+       "  MEDICARE CAIDCHIP CHAMPUS PRVHLTIN GRPHLTIN HLTINALC HLTINDRG HLTINMNT\n",
+       "1 1        2        2       2        99       99       99       99      \n",
+       "2 1        2        2       1         2        1        1        1      \n",
+       "3 2        2        2       1         1        2        2        2      \n",
+       "4 2        1        2       2        99       99       99       99      \n",
+       "5 2        2        2       2        99       99       99       99      \n",
+       "6 2        2        2       1         2       94        1        1      \n",
+       "  HLTINNOS AMHINP2 ⋯ IREDUHIGHST2 EDUHIGHCAT NEWRACE2 HEALTH ENRLCOLLST2\n",
+       "1 99       2       ⋯  9           3          1        4      5          \n",
+       "2 99       2       ⋯ 11           4          1        3      5          \n",
+       "3 99       2       ⋯ 11           4          1        2      5          \n",
+       "4 99       2       ⋯  6           1          1        2      5          \n",
+       "5  2       2       ⋯  8           2          7        1      5          \n",
+       "6 99       2       ⋯  4           1          7        3      5          \n",
+       "  IRWRKSTAT18 GOVTPROG INCOME PDEN10 COUTYP4\n",
+       "1 4           1        1      2      3      \n",
+       "2 4           2        4      1      1      \n",
+       "3 1           2        2      2      2      \n",
+       "4 4           2        2      1      1      \n",
+       "5 4           2        1      1      1      \n",
+       "6 4           2        3      1      1      "
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "head(data)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "55bc85c8",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-03-13T20:13:51.629029Z",
+     "iopub.status.busy": "2023-03-13T20:13:51.627399Z",
+     "iopub.status.idle": "2023-03-13T20:13:54.284526Z",
+     "shell.execute_reply": "2023-03-13T20:13:54.282690Z"
+    },
+    "papermill": {
+     "duration": 2.664999,
+     "end_time": "2023-03-13T20:13:54.287297",
+     "exception": false,
+     "start_time": "2023-03-13T20:13:51.622298",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "write.csv(data, \"nsduh-2021-subset.csv\", row.names = F)"
    ]
   }
  ],
@@ -123,14 +317,14 @@
   },
   "papermill": {
    "default_parameters": {},
-   "duration": 38.324764,
-   "end_time": "2023-03-13T19:58:23.379013",
+   "duration": 42.748838,
+   "end_time": "2023-03-13T20:13:54.512742",
    "environment_variables": {},
    "exception": null,
    "input_path": "__notebook__.ipynb",
    "output_path": "__notebook__.ipynb",
    "parameters": {},
-   "start_time": "2023-03-13T19:57:45.054249",
+   "start_time": "2023-03-13T20:13:11.763904",
    "version": "2.4.0"
   }
  },
