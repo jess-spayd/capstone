@@ -73,7 +73,8 @@ unmet_instype <- function(dataset, title) {
             add.lines = list(c("Pseudo R-Squared", logit_pseudoR2, probit_pseudoR2)),
             type = "text", 
             title=title,
-            omit.stat=c("adj.rsq","f"))
+            omit.stat=c("adj.rsq","f"),
+            single.row = TRUE)
   
 }
 
@@ -106,7 +107,8 @@ unmet_insurance <- function(dataset, title) {
             add.lines = list(c("Pseudo R-Squared", logit_pseudoR2, probit_pseudoR2)),
             type = "text", 
             title=title,
-            omit.stat=c("adj.rsq","f"))
+            omit.stat=c("adj.rsq","f"),
+            single.row = TRUE)
   
 }
 
@@ -139,7 +141,8 @@ tx_instype <- function(dataset, title) {
             add.lines = list(c("Pseudo R-Squared", logit_pseudoR2, probit_pseudoR2)),
             type = "text", 
             title=title,
-            omit.stat=c("adj.rsq","f"))
+            omit.stat=c("adj.rsq","f"),
+            single.row = TRUE)
   
 }
 
@@ -172,7 +175,8 @@ tx_insurance <- function(dataset, title) {
             add.lines = list(c("Pseudo R-Squared", logit_pseudoR2, probit_pseudoR2)),
             type = "text", 
             title=title,
-            omit.stat=c("adj.rsq","f"))
+            omit.stat=c("adj.rsq","f"),
+            single.row = TRUE)
   
 }
 
