@@ -5,7 +5,7 @@ library(stargazer)
 ##  R package version 5.2.2. https://CRAN.R-project.org/package=stargazer 
 
 # Import data
-setwd("~/Documents/JHU/capstone/data")
+setwd("~/Documents/GitHub/capstone/data")
 nsduh_2021_subset <- read_csv("nsduh-2021-subset.csv")
 
 # Summary statistics
