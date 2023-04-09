@@ -150,7 +150,7 @@ tx_instype <- function(dataset, title) {
 
 tx_insurance <- function(dataset, title) {
   
-  logit <- glm(unmet_need ~ insurance + 
+  logit <- glm(tx_util ~ insurance + 
                  age + military_service + sex + sexual_identity + 
                  marital_status + education + race_ethnic + HEALTH + 
                  emp_status + gov_asst + INCOME + urban_rural, 
@@ -160,7 +160,7 @@ tx_insurance <- function(dataset, title) {
   logit_pseudoR2 <- 1 - (logit$deviance) / (logit$null.deviance)
   logit_pseudoR2 <- round(logit_pseudoR2, 3)
   
-  probit <- glm(unmet_need ~ insurance + 
+  probit <- glm(tx_util ~ insurance + 
                   age + military_service + sex + sexual_identity + 
                   marital_status + education + race_ethnic + HEALTH + 
                   emp_status + gov_asst + INCOME + urban_rural, 
