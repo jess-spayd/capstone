@@ -76,6 +76,8 @@ unmet_instype <- function(dataset, title) {
             omit.stat=c("adj.rsq","f"),
             single.row = TRUE)
   
+  exp(cbind(OR = coef(logit), confint(logit)))
+  
 }
 
 ## Unmet Need x Insurance
@@ -109,6 +111,8 @@ unmet_insurance <- function(dataset, title) {
             title=title,
             omit.stat=c("adj.rsq","f"),
             single.row = TRUE)
+  
+  exp(cbind(OR = coef(logit), confint(logit)))
   
 }
 
@@ -144,6 +148,8 @@ tx_instype <- function(dataset, title) {
             omit.stat=c("adj.rsq","f"),
             single.row = TRUE)
   
+  exp(cbind(OR = coef(logit), confint(logit)))
+  
 }
 
 ## Tx Utilization x Insurance
@@ -177,6 +183,8 @@ tx_insurance <- function(dataset, title) {
             title=title,
             omit.stat=c("adj.rsq","f"),
             single.row = TRUE)
+  
+  exp(cbind(OR = coef(logit), confint(logit)))
   
 }
 
