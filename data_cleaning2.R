@@ -15,7 +15,7 @@ data$military_service <- data$SERVICE
 data$sex <- data$IRSEX
 data$sexual_identity <- data$SEXIDENT
 data$marital_status <- data$IRMARIT
-data$education <- data$EDUHIGHCAT
+data$education <- data$IREDUHIGHST2
 data$race_ethnic <- data$NEWRACE2
 data$emp_status <- data$IRWRKSTAT18
 data$gov_asst <- data$GOVTPROG
@@ -66,23 +66,6 @@ unique(data$marital_status)
 
 ## EDUCATION
 
-#data$education <- as.factor(data$education)
-#data$education <- fct_collapse(data$education,
- #                              "1" = "1", 
-  #                             "2" = "2", 
-   #                            "3" = "3", 
-    #                           "4" = "4", 
-     #                          "99" = "5")
-#data$education <- as.numeric(as.character(data$education))
-#data <- mutate(data, education = na_if(education, 99))
-#data$education <- as.factor(data$education)
-#data$education <- fct_collapse(data$education,
- #                              "No HS diploma" = "1", 
-  #                             "HS diploma" = "2", 
-   #                            "Some college/Assoc degree" = "3", 
-    #                           "Bach degree or higher" = "4")
-#unique(data$education)
-#data$education <- relevel(data$education, ref = "Bach degree or higher")
 
   
 ## RACE/ETHNICITY

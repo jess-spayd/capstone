@@ -202,13 +202,13 @@ unmet_instype(data_instype_priv_pub,
 
 
 ## Unmet MH Need by Insurance including NONE
-unmet_insurance(data_ins_known, 
-              'Unmet MH Need by Insurance including NONE')
+#unmet_insurance(data_ins_known, 
+ #             'Unmet MH Need by Insurance including NONE')
 
 
 ## Unmet MH Need by Insurance
-unmet_insurance(data_has_ins, 
-              'Unmet MH Need by Insurance PRIVATE vs. PUBLIC')
+#unmet_insurance(data_has_ins, 
+ #             'Unmet MH Need by Insurance PRIVATE vs. PUBLIC')
 
 
 ## Tx Utilization by Insurance Type including NONE
@@ -222,13 +222,13 @@ tx_instype(data_instype_priv_pub,
 
 
 ## Tx Utilization by Insurance including NONE
-tx_insurance(data_ins_known,
-             'Tx Utilization by Insurance including NONE')
+#tx_insurance(data_ins_known,
+ #            'Tx Utilization by Insurance including NONE')
 
 
 ## Tx Utilization by Insurance
-tx_insurance(data_has_ins,
-             'Tx Utilization by Insurance')
+#tx_insurance(data_has_ins,
+ #            'Tx Utilization by Insurance')
 
 
 

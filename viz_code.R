@@ -20,6 +20,13 @@ data_subset <- read.csv('nsduh_2021_final_subset.csv',
                         stringsAsFactors=TRUE)
 data_subset <- as.data.frame(data_subset)
 
+dim(data_subset)
+
+
+summary(data_all$insurance)
+summary(data_all$insurance_type)
+summary(as.factor(data_subset$unmet_need)) # 45879 total
+summary(as.factor(data_subset$tx_util)) # 45899 total
 
 
 ## SUMMARY: insurance/ins type
@@ -35,7 +42,7 @@ treemap(treemap_data,
         index=c("insurance_type","insurance"),
         vSize="n",
         type="index",
-        title="Health Insurance Types/Sources",
+        title="Figure 1: Health Insurance Types and Sources",
         align.labels=list(c('center', 'center'), c('right', 'bottom')),
         mirror.x=FALSE,
         mirror.y=TRUE,
@@ -91,10 +98,10 @@ plotdata <- treatment_type %>%
 
 ggplot(plotdata, aes(fill=AMHSVTYP4, x=insurance_type, y=pct)) +
   geom_bar(position='fill', stat='identity')+
-  labs(title="Mental Health Treatment by Insurance Type",
+  labs(title="Figure 5: Treatment Utilization by Service Type",
        x="Insurance Type",
        y="Percent",
-       fill="Treatment Type")+
+       fill="Service Type")+
   scale_y_continuous(labels=c('0', '25', '50', '75', '100'))+
   scale_fill_brewer(palette = 'Set3')+
  # scale_fill_manual(name="Treatment Type", 
@@ -115,7 +122,7 @@ ggplot(plotdata, aes(fill=AMHSVTYP4, x=insurance_type, y=pct)) +
 
 ggplot(barplot_data, aes(fill=factor(AMHTXYR4), x=insurance_type)) +
   geom_bar(position='fill', stat='count')+
-  labs(title="Mental Health Treatment Utilization by Insurance Type",
+  labs(title="Figure 4: Mental Health Treatment Utilization by Insurance Type",
        x="Insurance Type",
        y="Percent")+
   scale_y_continuous(labels=c('0', '25', '50', '75', '100'))+
@@ -159,28 +166,35 @@ ggplot(barplot_data, aes(fill=factor(AMHTXYR4), x=insurance)) +
 
 ggplot(barplot_data, aes(fill=factor(AMHTXND2), x=insurance_type)) +
   geom_bar(position='fill', stat='count')+
-  labs(title="Unmet Mental Health Needs by Insurance Type",
+  labs(title="Figure 2: Unmet Mental Health Needs by Insurance Type",
        x="Insurance Type",
        y="Percent")+
   scale_y_continuous(labels=c('0', '25', '50', '75', '100'))+
   scale_fill_manual(name="Unmet need", 
                       labels=c('No','Yes'), 
-                      values=c("#676767", "#b6b6b6"))+
+                      values=c("#80B1D3", "#FDB462"))+
   theme(panel.grid.major.x = element_blank())
 
 
 
 ggplot(barplot_data, aes(fill=factor(AMHTXND2), x=insurance)) +
   geom_bar(position='fill', stat='count')+
-  labs(title="Unmet Mental Health Needs by Insurance",
+  labs(title="Figure 3: Unmet Mental Health Needs by Insurance",
        x="Insurance Type",
        y="Percent")+
   scale_y_continuous(labels=c('0', '25', '50', '75', '100'))+
   scale_fill_manual(name="Unmet need", 
                     labels=c('No','Yes'), 
-                    values=c("#676767", "#b6b6b6"))+
+                    values=c("#80B1D3", "#FDB462"))+
   theme(panel.grid.major.x = element_blank())
 
+
+unmet_needs <- barplot_data %>%
+  group_by(insurance, AMHTXND2) %>%
+  dplyr::summarize(n = n()) %>% 
+  mutate(pct = n/sum(n),
+         lbl = round(pct*100))
+unmet_needs
 
 ## Logistic regression
 
@@ -214,3 +228,54 @@ ggplot(data_instype_priv_pub, aes(x=tx_util, y=insurance_type)) +
   geom_point(shape=1, position=position_jitter()) +
   stat_smooth(method='glm', method.args=list(family='binomial'), se=FALSE)
 
+
+## DESCRIPTIVE STATS TABLE: CONTROLS
+
+control <- select(data_subset, age, military_service, sex, sexual_identity, 
+                    marital_status, education, race_ethnic, HEALTH, 
+                    emp_status, gov_asst, INCOME, urban_rural)
+
+control$age <- as.factor(control$age)
+control$age <- fct_collapse(control$age,
+                           'Under 18' = c('1', '2', '3'),
+                           '18 to 25' = c('4', '5', '6'),
+                           '26 to 64' = c('7', '8', '9', '10'),
+                           '65 and over' = '11')
+
+control$military_service <- as.factor(control$military_service)
+
+###############################################################################
+###############################################################################
+
+control$education <- as.factor(control$education)
+control$education <- fct_collapse(control$education, 
+                                 'No HS diploma' = c('1','2','3','4','5','6','7'),
+                                 'HS diploma' = '8',
+                                 'Some college/Assoc degree' = c('9','10'),
+                                 'Bach degree or higher' = '11')
+
+###############################################################################
+###############################################################################
+
+control$HEALTH <- as.factor(control$HEALTH)
+control$HEALTH <- fct_recode(control$HEALTH,
+                              'Excellent' = '1',
+                              'Very Good' = '2',
+                              'Good' = '3',
+                              'Fair' = '4',
+                              'Poor' = '5')
+
+control$gov_asst <- as.factor(control$gov_asst)
+
+control$INCOME <- as.factor(control$INCOME)
+control$INCOME <- fct_recode(control$INCOME,
+                              'Less than $20,000' = '1',
+                              '$20,000 - $49,999' = '2',
+                              '$50,000 - $74,999' = '3',
+                              '$75,000 or more' = '4')
+
+control$urban_rural <- as.factor(control$urban_rural)
+control$urban_rural <- fct_recode(control$urban_rural,
+                                   'Large Metro' = '1',
+                                   'Small Metro' = '2',
+                                   'Nonmetro' = '3')
