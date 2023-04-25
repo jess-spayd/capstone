@@ -3,7 +3,7 @@ library(tidyverse)
 
 # Import data
 setwd("~/Documents/GitHub/capstone/data")
-data <- read.csv("nsduh_2021_subset_clean.csv")
+data <- read.csv("data-clean-reasons-notx.csv")
 
 # Independent variable: Insurance coverage
 ## MEDICARE - COVERED BY MEDICARE
@@ -49,4 +49,4 @@ data$insurance_type <- as.factor(data$insurance_type)
 
 
 
-#write.csv(data, "nsduh_2021_final.csv", row.names = FALSE)
+write.csv(data, "data-clean-vars-reasons-notx.csv", row.names = FALSE)

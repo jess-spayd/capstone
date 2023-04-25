@@ -3,7 +3,7 @@ library(tidyverse)
 
 # Import data
 setwd("~/Documents/GitHub/capstone/data")
-data <- read.csv("nsduh_2021_final.csv",
+data <- read.csv("data-clean-vars-reasons-notx.csv",
                  stringsAsFactors=TRUE)
 data <- as.data.frame(data)
 
@@ -120,11 +120,14 @@ summary(data$emp_status)
 final_dataset <- select(data, unmet_need, tx_util, insurance, insurance_type,
                         age, military_service, sex, sexual_identity, 
                         marital_status, education, race_ethnic, HEALTH, 
-                        emp_status, gov_asst, INCOME, urban_rural)
+                        emp_status, gov_asst, INCOME, urban_rural,
+                        AUUNCOST, AUUNNBR, AUUNJOB, AUUNNCOV, AUUNENUF, 
+                        AUUNWHER, AUUNCFID, AUUNCMIT, AUUNNOND, AUUNHNDL, 
+                        AUUNNHLP, AUUNBUSY, AUUNFOUT, AUUNNTSP, AUUNSOR, AUUNRIM2)
 
 
 # Export CSV
 
-write.csv(final_dataset, "nsduh_2021_final_subset.csv", row.names = FALSE)
+write.csv(final_dataset, "final-data-clean-reasons-notx.csv", row.names = FALSE)
 
 

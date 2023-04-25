@@ -6,7 +6,7 @@ library(stargazer)
 
 # Import data
 setwd("~/Documents/GitHub/capstone/data")
-nsduh_2021_subset <- read_csv("nsduh-2021-subset.csv")
+nsduh_2021_subset <- read_csv("data-subset-with-reasons-notx.csv")
 
 # Summary statistics
 nsduh_2021_subset <- as.data.frame(nsduh_2021_subset)
@@ -463,3 +463,4 @@ nsduh_2021_subset <- mutate(nsduh_2021_subset, IRWRKSTAT18 = na_if(IRWRKSTAT18, 
 summary(nsduh_2021_subset)
 
 #write.csv(nsduh_2021_subset, "nsduh_2021_subset_clean.csv", row.names = FALSE)
+write.csv(nsduh_2021_subset, "data-clean-reasons-notx.csv", row.names = FALSE)

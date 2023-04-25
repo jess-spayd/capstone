@@ -1,0 +1,248 @@
+# Import libraries
+library(stargazer)
+library(tidyverse)
+library(Hmisc)
+library(car)
+library(corrplot)
+library(sandwich)
+library(lmtest)
+library(treemap)
+
+# Import data
+setwd("~/Documents/GitHub/capstone/data")
+data <- read.csv("super-final-data-clean-reasons-notx.csv",
+                 stringsAsFactors=TRUE)
+data <- as.data.frame(data)
+
+
+data <- mutate(data, no_tx_reason = case_when(
+  AUUNCOST == 1 ~ 'Couldn\'t afford cost', # NO MH TMT COULDN'T AFFORD COST
+  AUUNNCOV == 1 ~ 'Insurance didn\'t cover MH', # NO MH TMT HEALTH INSUR DIDN'T COVER
+  AUUNENUF == 1 ~ 'Not enough insurance coverage' # NO MH TMT NOT ENUF HEALTH INSUR COVERAGE
+))
+
+data$no_tx_reason <- as.factor(data$no_tx_reason)
+
+
+data$reason_category <- as.factor(data$AUUNRIM2)
+data$reason_category <- fct_collapse(data$reason_category,
+                                     "Cost/Insurance" = c(1,4,5, 18, 41, 42),
+                                     "Stigma" = c(2, 8, 13, 17, 19, 20),
+                                     "Work/Family/Transportation" = c(3, 12, 14, 34),
+                                     "Lack of treatment options" = c(6, 23, 25, 26, 28, 32, 33, 44, 48),
+                                     "COVID-19" = c(60,61,62,63),
+                                     "Mental health symptoms" = c(22, 38),
+                                     "Other" = c(7, 9, 10, 11, 15, 16, 21,
+                                                 24, 27, 29, 38, 40))
+
+
+plotdata <- data %>%
+  group_by(insurance_type, no_tx_reason) %>%
+  dplyr::summarize(n = n()) %>% 
+  mutate(pct = n/sum(n),
+         lbl = round(pct*100, 2))
+
+plotdata <- subset(plotdata, !is.na(no_tx_reason))
+plotdata <- subset(plotdata, insurance_type != 'unknown')
+plotdata <- subset(plotdata, insurance_type != 'none')
+
+
+
+#ggplot(data, aes(x=no_tx_reason, y=insurance_type)) +
+ # geom_jitter()
+
+
+ggplot(plotdata, aes(fill=no_tx_reason, y=n, x=insurance_type)) +
+  geom_bar(position="stack", stat="identity") +
+  geom_text(aes(label = paste0(lbl, '%')), 
+            size = 3, 
+            position = position_stack(vjust = 0.5)) +
+  scale_fill_brewer(palette = 'Set3') +
+  theme(panel.grid.major.x = element_blank())+
+  labs(title='Figure 6: Unmet MH need due to cost or insurance',
+       x='Insurance Type',
+       y='count',
+       fill='Reason')
+
+
+
+no_tx <- subset(data, tx_util == 0)
+summary(no_tx)
+dim(no_tx)
+
+unmet <- subset(data, unmet_need == 1)
+dim(unmet)
+
+###############################################################################
+
+
+
+
+###############################################################################
+
+## INSURANCE TYPE, exclude "unknown"
+unmet_instype_known <- subset(unmet, insurance_type != 'unknown')
+unmet_instype_known$insurance_type <- relevel(unmet_instype_known$insurance_type, 
+                                             ref = "none")
+## INSURANCE TYPE, only private vs. public
+unmet_instype_priv_pub <- subset(unmet_instype_known, insurance_type != 'none')
+unmet_instype_priv_pub$insurance_type <- relevel(unmet_instype_priv_pub$insurance_type, 
+                                                ref = "private")
+
+# independent variable: insurance_type
+# dependent variable: AUUNCOST, AUUNNCOV, AUUNENUF
+
+logit <- glm(AUUNCOST ~ insurance_type + 
+               age + military_service + sex + sexual_identity + 
+               marital_status + education + race_ethnic + HEALTH + 
+               emp_status + gov_asst + INCOME + urban_rural, 
+             family = binomial(link = "logit"), 
+             data=unmet_instype_priv_pub)
+logit$rse <- sqrt(diag(vcovHC(logit, type="HC1")))
+logit_pseudoR2 <- 1 - (logit$deviance) / (logit$null.deviance)
+logit_pseudoR2 <- round(logit_pseudoR2, 3)
+
+stargazer(logit, 
+          se=logit$rse, 
+          add.lines = list(c("Pseudo R-Squared", logit_pseudoR2)),
+          type = "text", 
+          title='title',
+          omit.stat=c("adj.rsq","f"),
+          single.row = TRUE)
+
+exp(cbind(OR = coef(logit), confint(logit)))
+
+
+###############################################################################
+
+unmet_plotdata <- subset(unmet, !is.na(AUUNRIM2))
+unmet_plotdata <- subset(unmet_plotdata, AUUNRIM2 != 70)
+
+unmet_plotdata <- mutate(unmet_plotdata, reason = case_when(
+  AUUNRIM2 == 1 ~ 'You couldn\'t afford the cost',
+  AUUNRIM2 == 2 ~ 'Concerned neighbors/community have neg opinion',
+  AUUNRIM2 == 3 ~ 'Concerned might have a neg effect on your job',
+  AUUNRIM2 == 4 ~ 'Your health ins doesnt cover any mental hlth tmt',
+  AUUNRIM2 == 5 ~ 'Your health ins doesnt pay enuf for ment hlth tmt',
+  AUUNRIM2 == 6 ~ 'You did not know where to go to get services',
+  AUUNRIM2 == 7 ~ 'Concerned info might not be kept confidential',
+  AUUNRIM2 == 8 ~ 'Concerned might be committed/take medicine',
+  AUUNRIM2 == 9 ~ 'You didn\'t think you needed treatment at the time',
+  AUUNRIM2 == 10 ~ 'You thought could handle problem w/o treatment',
+  AUUNRIM2 == 11 ~ 'You didn\'t think treatment would help',
+  AUUNRIM2 == 12 ~ 'Didn\'t have time (b/c of job, childcare, other)',
+  AUUNRIM2 == 13 ~ 'Didn\'t want others to find out you needed treatmnt',
+  AUUNRIM2 == 14 ~ 'No transportation/too far away/hrs inconvenient',
+  AUUNRIM2 == 15 ~ 'Some other reason or reasons',
+  AUUNRIM2 == 16 ~ 'Afraid too painful/unpleasant/afraid of diagnosis',
+  AUUNRIM2 == 17 ~ 'Others dissuaded/didn\'t want you to/unsupportive',
+  AUUNRIM2 == 18 ~ 'You do not have any health insurance coverage',
+  AUUNRIM2 == 19 ~ 'Ashamed, embarrassed, afraid, or sign of weakness',
+  AUUNRIM2 == 20 ~ 'You were too stubborn/prideful to go',
+  AUUNRIM2 == 21 ~ 'You did not want to; reason unspecified',
+  AUUNRIM2 == 22 ~ 'Unmotivated/depressed/confused/angry/unworthy',
+  AUUNRIM2 == 23 ~ 'Services unavailable in your area/services limited',
+  AUUNRIM2 == 24 ~ 'Didn\'t want to talk about your problems w/anyone',
+  AUUNRIM2 == 25 ~ 'Didn\'t like how treated/don\'t like Dr(s)/hospitals',
+  AUUNRIM2 == 26 ~ 'Attempted to get trmt,unsuccessful in finding help',
+  AUUNRIM2 == 27 ~ 'Concerned how the court system would treat you',
+  AUUNRIM2 == 28 ~ 'No program/counselor competent/comfortable with',
+  AUUNRIM2 == 29 ~ 'Just never went/made appointment/arrangements',
+  AUUNRIM2 == 32 ~ 'Too much red tape/hassle to get services',
+  AUUNRIM2 == 33 ~ 'There were no openings/long waiting list/delays',
+  AUUNRIM2 == 34 ~ 'You had other problems/issues to deal with',
+  AUUNRIM2 == 38 ~ 'Too afraid to leave the house',
+  AUUNRIM2 == 40 ~ 'Unready to seek help/deal w/issues;othrwise unspfd',
+  AUUNRIM2 == 41 ~ 'Preferrd providr wont/may not accept hlth ins plan',
+  AUUNRIM2 == 42 ~ 'Health ins wont accept preferred provider/tmt',
+  AUUNRIM2 == 44 ~ 'Services desired unavailable/currently ineligible',
+  AUUNRIM2 == 48 ~ 'Looking/need to find/don\'t have counselor/Dr/prgm',
+  AUUNRIM2 == 60 ~ 'COVID-19; otherwise unspecified',
+  AUUNRIM2 == 61 ~ 'COVID-related access/closures/caseloads/waitlists',
+  AUUNRIM2 == 62 ~ 'COVID-related telehealth dislike/lack of privacy',
+  AUUNRIM2 == 63 ~ 'Fear of exposure to COVID-19'
+))
+
+unmet_plotdata %>% 
+  group_by(reason) %>%
+  dplyr::summarise(freq = n()) %>%
+  dplyr::arrange(desc(freq)) %>%
+  slice(1:8) %>%
+  ggplot(., aes(y=reorder(reason, +freq), x=freq, fill=reason)) + geom_bar(stat='identity') +
+  theme(panel.grid.major.y = element_blank(),
+        legend.position = 'none')+
+  scale_fill_brewer(palette = 'Set3') +
+  labs(title='Figure 8: Top Reasons for Unmet MH Need',
+       x= 'count',
+       y= 'Reason')
+  
+
+summary(as.factor(unmet_plotdata$AUUNRIM2))
+# 33, 19, 22, 26, 28, 60, 12, 18
+
+
+###############################################################################
+
+dim(unmet_plotdata)
+dim(unmet)
+
+unmet_instype_priv_pub_reasons <- subset(unmet_instype_priv_pub, !is.na(AUUNRIM2))
+unmet_instype_priv_pub_reasons <- subset(unmet_instype_priv_pub_reasons, AUUNRIM2 != 70)
+unmet_instype_priv_pub_reasons$insurance_type <- fct_drop(unmet_instype_priv_pub_reasons$insurance_type)
+
+
+contingency_table <- table(unmet_instype_priv_pub_reasons$AUUNRIM2, 
+                           unmet_instype_priv_pub_reasons$insurance_type)
+
+chisq.test(contingency_table)
+
+plotdata <- unmet_instype_priv_pub_reasons %>%
+  group_by(insurance_type, AUUNRIM2) %>%
+  dplyr::summarize(n = n())
+  
+
+ggplot(plotdata, aes(fill=as.factor(AUUNRIM2), x=insurance_type, y=n)) +
+  geom_bar(position='stack', stat='identity')
+
+
+###############################################################################
+
+
+
+unmet_instype_priv_pub_reasons$reason_category <- as.factor(unmet_instype_priv_pub_reasons$AUUNRIM2)
+unmet_instype_priv_pub_reasons$reason_category <- fct_collapse(unmet_instype_priv_pub_reasons$reason_category,
+                                                               "Cost/Insurance" = c(1,4,5, 18, 41, 42),
+                                                               "Stigma" = c(2, 8, 13, 17, 19, 20),
+                                                               "Work/Family/Transportation" = c(3, 12, 14, 34),
+                                                               "Lack of treatment options" = c(6, 23, 25, 26, 28, 32, 33, 44, 48),
+                                                               "COVID-19" = c(60,61,62,63),
+                                                               "Mental health symptoms" = c(22, 38),
+                                                               "Other" = c(7, 9, 10, 11, 15, 16, 21,
+                                                                           24, 27, 29, 38, 40))
+
+
+contingency_table <- table(unmet_instype_priv_pub_reasons$reason_category, 
+                           unmet_instype_priv_pub_reasons$insurance_type)
+
+chisq.test(contingency_table)
+
+plotdata <- unmet_instype_priv_pub_reasons %>%
+  group_by(insurance_type, reason_category) %>%
+  dplyr::summarize(n = n()) %>%
+  mutate(pct = n/sum(n),
+         lbl = round(pct*100))
+
+
+ggplot(plotdata, aes(fill=reason_category, x=insurance_type, y=n)) +
+  geom_bar(position='stack', stat='identity') +
+  geom_text(aes(label = paste0(lbl, '%')), 
+            size = 3, 
+            position = position_stack(vjust = 0.5)) +
+  labs(x='Insurance Type',
+       y='count',
+       fill='Reason Category',
+       title='Figure 7: Barriers to Treatment by Insurance Type') +
+  scale_fill_brewer(palette = 'Set3') +
+  theme(panel.grid.major.x = element_blank())
+
+
