@@ -2,13 +2,13 @@
  "cells": [
   {
    "cell_type": "markdown",
-   "id": "7474e75c",
+   "id": "79e89406",
    "metadata": {
     "papermill": {
-     "duration": 0.004197,
-     "end_time": "2023-04-27T18:19:37.411832",
+     "duration": 0.006001,
+     "end_time": "2023-04-27T18:43:47.599256",
      "exception": false,
-     "start_time": "2023-04-27T18:19:37.407635",
+     "start_time": "2023-04-27T18:43:47.593255",
      "status": "completed"
     },
     "tags": []
@@ -33,20 +33,20 @@
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "203268d4",
+   "id": "d93defa0",
    "metadata": {
     "_kg_hide-output": true,
     "execution": {
-     "iopub.execute_input": "2023-04-27T18:19:37.421391Z",
-     "iopub.status.busy": "2023-04-27T18:19:37.419418Z",
-     "iopub.status.idle": "2023-04-27T18:19:41.338368Z",
-     "shell.execute_reply": "2023-04-27T18:19:41.336584Z"
+     "iopub.execute_input": "2023-04-27T18:43:47.614227Z",
+     "iopub.status.busy": "2023-04-27T18:43:47.612310Z",
+     "iopub.status.idle": "2023-04-27T18:43:51.573301Z",
+     "shell.execute_reply": "2023-04-27T18:43:51.571479Z"
     },
     "papermill": {
-     "duration": 3.926212,
-     "end_time": "2023-04-27T18:19:41.340962",
+     "duration": 3.971948,
+     "end_time": "2023-04-27T18:43:51.575903",
      "exception": false,
-     "start_time": "2023-04-27T18:19:37.414750",
+     "start_time": "2023-04-27T18:43:47.603955",
      "status": "completed"
     },
     "tags": []
@@ -104,19 +104,19 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "0787d5dc",
+   "id": "8e78da22",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2023-04-27T18:19:41.380341Z",
-     "iopub.status.busy": "2023-04-27T18:19:41.350214Z",
-     "iopub.status.idle": "2023-04-27T18:19:41.619725Z",
-     "shell.execute_reply": "2023-04-27T18:19:41.617966Z"
+     "iopub.execute_input": "2023-04-27T18:43:51.615219Z",
+     "iopub.status.busy": "2023-04-27T18:43:51.585591Z",
+     "iopub.status.idle": "2023-04-27T18:43:51.835505Z",
+     "shell.execute_reply": "2023-04-27T18:43:51.833659Z"
     },
     "papermill": {
-     "duration": 0.278243,
-     "end_time": "2023-04-27T18:19:41.622951",
+     "duration": 0.258658,
+     "end_time": "2023-04-27T18:43:51.838601",
      "exception": false,
-     "start_time": "2023-04-27T18:19:41.344708",
+     "start_time": "2023-04-27T18:43:51.579943",
      "status": "completed"
     },
     "tags": []
@@ -134,47 +134,108 @@
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "cf7fa1ba",
+   "id": "834d594a",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2023-04-27T18:19:41.633509Z",
-     "iopub.status.busy": "2023-04-27T18:19:41.631907Z",
-     "iopub.status.idle": "2023-04-27T18:19:41.689630Z",
-     "shell.execute_reply": "2023-04-27T18:19:41.687891Z"
+     "iopub.execute_input": "2023-04-27T18:43:51.850297Z",
+     "iopub.status.busy": "2023-04-27T18:43:51.848662Z",
+     "iopub.status.idle": "2023-04-27T18:43:51.871910Z",
+     "shell.execute_reply": "2023-04-27T18:43:51.870118Z"
     },
     "papermill": {
-     "duration": 0.065614,
-     "end_time": "2023-04-27T18:19:41.692082",
+     "duration": 0.032179,
+     "end_time": "2023-04-27T18:43:51.874954",
      "exception": false,
-     "start_time": "2023-04-27T18:19:41.626468",
+     "start_time": "2023-04-27T18:43:51.842775",
      "status": "completed"
     },
     "tags": []
    },
    "outputs": [],
    "source": [
-    "# create gaga/not gaga label\n",
-    "lyrics <- dplyr::mutate(lyrics, label = if_else(Artist == 'Lady Gaga', 'gaga', 'not gaga'))\n",
-    "#head(lyrics)\n",
-    "#unique(lyrics$label)"
+    "# split dataset to have equal sample of gaga and non-gaga songs\n",
+    "gaga <- subset(lyrics, Artist == 'Lady Gaga')\n",
+    "gaga$label <- 'gaga'\n",
+    "not_gaga <- subset(lyrics, Artist != 'Lady Gaga')\n",
+    "not_gaga$label <- 'not gaga'\n",
+    "\n",
+    "#dim(gaga)\n",
+    "#dim(not_gaga)"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 4,
-   "id": "c735e4eb",
+   "id": "119452c9",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2023-04-27T18:19:41.702812Z",
-     "iopub.status.busy": "2023-04-27T18:19:41.701348Z",
-     "iopub.status.idle": "2023-04-27T18:19:41.715971Z",
-     "shell.execute_reply": "2023-04-27T18:19:41.714274Z"
+     "iopub.execute_input": "2023-04-27T18:43:51.886370Z",
+     "iopub.status.busy": "2023-04-27T18:43:51.884777Z",
+     "iopub.status.idle": "2023-04-27T18:43:51.904146Z",
+     "shell.execute_reply": "2023-04-27T18:43:51.902317Z"
     },
     "papermill": {
-     "duration": 0.022738,
-     "end_time": "2023-04-27T18:19:41.718405",
+     "duration": 0.028261,
+     "end_time": "2023-04-27T18:43:51.907182",
      "exception": false,
-     "start_time": "2023-04-27T18:19:41.695667",
+     "start_time": "2023-04-27T18:43:51.878921",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "# create random sample of non-gaga songs\n",
+    "set.seed(328)\n",
+    "not_gaga_sample <- not_gaga[sample(1:nrow(not_gaga), 161), ]\n",
+    "\n",
+    "#dim(not_gaga_sample)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "dd46109f",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-04-27T18:43:51.918414Z",
+     "iopub.status.busy": "2023-04-27T18:43:51.916764Z",
+     "iopub.status.idle": "2023-04-27T18:43:51.934103Z",
+     "shell.execute_reply": "2023-04-27T18:43:51.932336Z"
+    },
+    "papermill": {
+     "duration": 0.026008,
+     "end_time": "2023-04-27T18:43:51.937080",
+     "exception": false,
+     "start_time": "2023-04-27T18:43:51.911072",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "# combine back into one dataframe\n",
+    "data <- rbind(gaga, not_gaga_sample)\n",
+    "\n",
+    "#dim(data)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "f0fc1955",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-04-27T18:43:51.948579Z",
+     "iopub.status.busy": "2023-04-27T18:43:51.946985Z",
+     "iopub.status.idle": "2023-04-27T18:43:51.962344Z",
+     "shell.execute_reply": "2023-04-27T18:43:51.960532Z"
+    },
+    "papermill": {
+     "duration": 0.024405,
+     "end_time": "2023-04-27T18:43:51.965356",
+     "exception": false,
+     "start_time": "2023-04-27T18:43:51.940951",
      "status": "completed"
     },
     "tags": []
@@ -182,29 +243,29 @@
    "outputs": [],
    "source": [
     "#### metadata\n",
-    "meta_list <- list(title = lyrics$Title,\n",
-    "                 album = lyrics$Album,\n",
-    "                 year = lyrics$Year,\n",
-    "                 artist = lyrics$Artist,\n",
-    "                 label = lyrics$label)"
+    "meta_list <- list(title = data$Title,\n",
+    "                 album = data$Album,\n",
+    "                 year = data$Year,\n",
+    "                 artist = data$Artist,\n",
+    "                 label = data$label)"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 5,
-   "id": "caa36c6d",
+   "execution_count": 7,
+   "id": "43a19203",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2023-04-27T18:19:41.729364Z",
-     "iopub.status.busy": "2023-04-27T18:19:41.727961Z",
-     "iopub.status.idle": "2023-04-27T18:19:45.294647Z",
-     "shell.execute_reply": "2023-04-27T18:19:45.292914Z"
+     "iopub.execute_input": "2023-04-27T18:43:51.976636Z",
+     "iopub.status.busy": "2023-04-27T18:43:51.975034Z",
+     "iopub.status.idle": "2023-04-27T18:43:52.595719Z",
+     "shell.execute_reply": "2023-04-27T18:43:52.593976Z"
     },
     "papermill": {
-     "duration": 3.574702,
-     "end_time": "2023-04-27T18:19:45.296883",
+     "duration": 0.628817,
+     "end_time": "2023-04-27T18:43:52.598057",
      "exception": false,
-     "start_time": "2023-04-27T18:19:41.722181",
+     "start_time": "2023-04-27T18:43:51.969240",
      "status": "completed"
     },
     "tags": []
@@ -218,22 +279,22 @@
        ".list-inline>li {display: inline-block}\n",
        ".list-inline>li:not(:last-child)::after {content: \"\\00b7\"; padding: 0 .5ex}\n",
        "</style>\n",
-       "<ol class=list-inline><li>3019</li><li>173</li></ol>\n"
+       "<ol class=list-inline><li>322</li><li>136</li></ol>\n"
       ],
       "text/latex": [
        "\\begin{enumerate*}\n",
-       "\\item 3019\n",
-       "\\item 173\n",
+       "\\item 322\n",
+       "\\item 136\n",
        "\\end{enumerate*}\n"
       ],
       "text/markdown": [
-       "1. 3019\n",
-       "2. 173\n",
+       "1. 322\n",
+       "2. 136\n",
        "\n",
        "\n"
       ],
       "text/plain": [
-       "[1] 3019  173"
+       "[1] 322 136"
       ]
      },
      "metadata": {},
@@ -243,39 +304,39 @@
    "source": [
     "# Data preparation\n",
     "## remove songs without lyrics\n",
-    "lyrics <- dplyr::filter(lyrics, nchar(lyrics$'Lyric') >= 5)\n",
+    "data <- dplyr::filter(data, nchar(data$'Lyric') >= 5)\n",
     "## create corpus\n",
-    "lyrics_corpus <- corpus(lyrics, text = 'Lyric', meta = meta_list)\n",
+    "data_corpus <- corpus(data, text = 'Lyric', meta = meta_list)\n",
     "## create DFM\n",
-    "lyrics_dfm <- lyrics_corpus %>% tokens(remove_punct = TRUE) %>% dfm()\n",
+    "data_dfm <- data_corpus %>% tokens(remove_punct = TRUE) %>% dfm()\n",
     "## remove stopwords\n",
-    "lyrics_dfm <- dfm_remove(lyrics_dfm, stopwords('english'))\n",
+    "data_dfm <- dfm_remove(data_dfm, stopwords('english'))\n",
     "## stem\n",
-    "lyrics_dfm <- dfm_wordstem(lyrics_dfm)\n",
+    "data_dfm <- dfm_wordstem(data_dfm)\n",
     "## trim\n",
-    "lyrics_dfm <- dfm_trim(lyrics_dfm, \n",
+    "data_dfm <- dfm_trim(data_dfm, \n",
     "                     min_docfreq = 0.1, \n",
     "                     max_docfreq = 0.9, \n",
     "                     docfreq_type = 'prop')\n",
-    "dim(lyrics_dfm)"
+    "dim(data_dfm)"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 6,
-   "id": "3f14e1c4",
+   "execution_count": 8,
+   "id": "934e0753",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2023-04-27T18:19:45.307904Z",
-     "iopub.status.busy": "2023-04-27T18:19:45.306458Z",
-     "iopub.status.idle": "2023-04-27T18:19:45.325033Z",
-     "shell.execute_reply": "2023-04-27T18:19:45.323372Z"
+     "iopub.execute_input": "2023-04-27T18:43:52.610106Z",
+     "iopub.status.busy": "2023-04-27T18:43:52.608463Z",
+     "iopub.status.idle": "2023-04-27T18:43:52.628605Z",
+     "shell.execute_reply": "2023-04-27T18:43:52.626766Z"
     },
     "papermill": {
-     "duration": 0.026582,
-     "end_time": "2023-04-27T18:19:45.327440",
+     "duration": 0.029512,
+     "end_time": "2023-04-27T18:43:52.631861",
      "exception": false,
-     "start_time": "2023-04-27T18:19:45.300858",
+     "start_time": "2023-04-27T18:43:52.602349",
      "status": "completed"
     },
     "tags": []
@@ -283,19 +344,19 @@
    "outputs": [],
    "source": [
     "# convert to matrix\n",
-    "lyrics_dfm_matrix <- convert(lyrics_dfm, to='matrix')"
+    "data_dfm_matrix <- convert(data_dfm, to='matrix')"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": null,
-   "id": "e3227d0a",
+   "id": "fb56841f",
    "metadata": {
     "papermill": {
-     "duration": 0.003664,
-     "end_time": "2023-04-27T18:19:45.334948",
+     "duration": 0.00443,
+     "end_time": "2023-04-27T18:43:52.640686",
      "exception": false,
-     "start_time": "2023-04-27T18:19:45.331284",
+     "start_time": "2023-04-27T18:43:52.636256",
      "status": "completed"
     },
     "tags": []
@@ -305,13 +366,13 @@
   },
   {
    "cell_type": "markdown",
-   "id": "cbc0ef8d",
+   "id": "2cbcb230",
    "metadata": {
     "papermill": {
-     "duration": 0.003585,
-     "end_time": "2023-04-27T18:19:45.342240",
+     "duration": 0.003901,
+     "end_time": "2023-04-27T18:43:52.648707",
      "exception": false,
-     "start_time": "2023-04-27T18:19:45.338655",
+     "start_time": "2023-04-27T18:43:52.644806",
      "status": "completed"
     },
     "tags": []
@@ -324,13 +385,13 @@
   {
    "cell_type": "code",
    "execution_count": null,
-   "id": "2b4cb732",
+   "id": "5e1a16ea",
    "metadata": {
     "papermill": {
-     "duration": 0.003759,
-     "end_time": "2023-04-27T18:19:45.349618",
+     "duration": 0.004047,
+     "end_time": "2023-04-27T18:43:52.656749",
      "exception": false,
-     "start_time": "2023-04-27T18:19:45.345859",
+     "start_time": "2023-04-27T18:43:52.652702",
      "status": "completed"
     },
     "tags": []
@@ -340,13 +401,13 @@
   },
   {
    "cell_type": "markdown",
-   "id": "f42b73c6",
+   "id": "2ee4e238",
    "metadata": {
     "papermill": {
-     "duration": 0.003473,
-     "end_time": "2023-04-27T18:19:45.356669",
+     "duration": 0.003944,
+     "end_time": "2023-04-27T18:43:52.664689",
      "exception": false,
-     "start_time": "2023-04-27T18:19:45.353196",
+     "start_time": "2023-04-27T18:43:52.660745",
      "status": "completed"
     },
     "tags": []
@@ -358,13 +419,13 @@
   {
    "cell_type": "code",
    "execution_count": null,
-   "id": "91a507fd",
+   "id": "56478981",
    "metadata": {
     "papermill": {
-     "duration": 0.003551,
-     "end_time": "2023-04-27T18:19:45.363886",
+     "duration": 0.003895,
+     "end_time": "2023-04-27T18:43:52.672700",
      "exception": false,
-     "start_time": "2023-04-27T18:19:45.360335",
+     "start_time": "2023-04-27T18:43:52.668805",
      "status": "completed"
     },
     "tags": []
@@ -389,14 +450,14 @@
   },
   "papermill": {
    "default_parameters": {},
-   "duration": 11.660692,
-   "end_time": "2023-04-27T18:19:45.488729",
+   "duration": 8.693085,
+   "end_time": "2023-04-27T18:43:52.799995",
    "environment_variables": {},
    "exception": null,
    "input_path": "__notebook__.ipynb",
    "output_path": "__notebook__.ipynb",
    "parameters": {},
-   "start_time": "2023-04-27T18:19:33.828037",
+   "start_time": "2023-04-27T18:43:44.106910",
    "version": "2.4.0"
   }
  },
