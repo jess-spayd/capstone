@@ -116,7 +116,8 @@ ggplot(plotdata, aes(fill=AMHSVTYP4, x=insurance_type, y=pct)) +
   geom_text(aes(label = paste0(lbl, '%')), 
             size = 3, 
             position = position_stack(vjust = 0.5)) +
-  theme(panel.grid.major.x = element_blank())
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black"))
 
 
 
@@ -130,7 +131,8 @@ ggplot(barplot_data, aes(fill=factor(AMHTXYR4), x=insurance_type)) +
                       labels=c('No',
                                'Yes'),
                     values=c("#80B1D3", "#FDB462"))+ 
-  theme(panel.grid.major.x = element_blank())
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black"))
 
 
 
@@ -146,7 +148,8 @@ ggplot(barplot_data, aes(fill=factor(AMHTXYR4), x=insurance)) +
                              'Yes'),
                     values=c("#676767", "#b6b6b6"))+ 
   theme(panel.grid.major.x = element_blank(),
-        axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+        axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))+
+  theme_bw()
 
 ## Brewer palette Set3
 # "#8DD3C7" "#FFFFB3" "#BEBADA" "#FB8072" "#80B1D3" "#FDB462" "#B3DE69" "#FCCDE5"
@@ -173,7 +176,8 @@ ggplot(barplot_data, aes(fill=factor(AMHTXND2), x=insurance_type)) +
   scale_fill_manual(name="Unmet need", 
                       labels=c('No','Yes'), 
                       values=c("#80B1D3", "#FDB462"))+
-  theme(panel.grid.major.x = element_blank())
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black"))
 
 
 
@@ -186,7 +190,8 @@ ggplot(barplot_data, aes(fill=factor(AMHTXND2), x=insurance)) +
   scale_fill_manual(name="Unmet need", 
                     labels=c('No','Yes'), 
                     values=c("#80B1D3", "#FDB462"))+
-  theme(panel.grid.major.x = element_blank())
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black"))
 
 
 unmet_needs <- barplot_data %>%
@@ -279,3 +284,4 @@ control$urban_rural <- fct_recode(control$urban_rural,
                                    'Large Metro' = '1',
                                    'Small Metro' = '2',
                                    'Nonmetro' = '3')
+

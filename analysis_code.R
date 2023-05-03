@@ -78,6 +78,8 @@ unmet_instype <- function(dataset, title) {
   
   exp(cbind(OR = coef(logit), confint(logit)))
   
+  summary(logit)
+  
 }
 
 ## Unmet Need x Insurance
@@ -113,6 +115,8 @@ unmet_insurance <- function(dataset, title) {
             single.row = TRUE)
   
   exp(cbind(OR = coef(logit), confint(logit)))
+  
+  summary(logit)
   
 }
 
@@ -150,6 +154,8 @@ tx_instype <- function(dataset, title) {
   
   exp(cbind(OR = coef(logit), confint(logit)))
   
+  summary(logit)
+  
 }
 
 ## Tx Utilization x Insurance
@@ -185,6 +191,8 @@ tx_insurance <- function(dataset, title) {
             single.row = TRUE)
   
   exp(cbind(OR = coef(logit), confint(logit)))
+  
+  summary(logit)
   
 }
 

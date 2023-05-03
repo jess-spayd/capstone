@@ -58,11 +58,12 @@ ggplot(plotdata, aes(fill=no_tx_reason, y=n, x=insurance_type)) +
             size = 3, 
             position = position_stack(vjust = 0.5)) +
   scale_fill_brewer(palette = 'Set3') +
-  theme(panel.grid.major.x = element_blank())+
   labs(title='Figure 6: Unmet MH need due to cost or insurance',
        x='Insurance Type',
        y='count',
-       fill='Reason')
+       fill='Reason')+
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black"))
 
 
 
@@ -169,12 +170,13 @@ unmet_plotdata %>%
   dplyr::arrange(desc(freq)) %>%
   slice(1:8) %>%
   ggplot(., aes(y=reorder(reason, +freq), x=freq, fill=reason)) + geom_bar(stat='identity') +
-  theme(panel.grid.major.y = element_blank(),
-        legend.position = 'none')+
   scale_fill_brewer(palette = 'Set3') +
   labs(title='Figure 8: Top Reasons for Unmet MH Need',
        x= 'count',
-       y= 'Reason')
+       y= 'Reason') +
+  theme(legend.position = 'none',
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black"))
   
 
 summary(as.factor(unmet_plotdata$AUUNRIM2))
@@ -237,12 +239,15 @@ ggplot(plotdata, aes(fill=reason_category, x=insurance_type, y=n)) +
   geom_bar(position='stack', stat='identity') +
   geom_text(aes(label = paste0(lbl, '%')), 
             size = 3, 
+            color='black',
             position = position_stack(vjust = 0.5)) +
   labs(x='Insurance Type',
        y='count',
        fill='Reason Category',
        title='Figure 7: Barriers to Treatment by Insurance Type') +
-  scale_fill_brewer(palette = 'Set3') +
-  theme(panel.grid.major.x = element_blank())
+  scale_fill_brewer(palette = 'Set3') + # Pastel1/2 or Set3 ?
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black"))
+
 
 
