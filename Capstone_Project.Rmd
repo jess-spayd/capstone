@@ -1,0 +1,566 @@
+---
+title: 'Investigating the Role of Insurance Coverage in Mental Health Treatment Access:
+  Contrasting Public and Private Health Insurance in the United States'
+author: "Jessica D. Spayd"
+date: "May 2023"
+output: html_document
+---
+
+*A capstone submitted to Johns Hopkins University in conformity with the requirements for the degree of Master of Science in Data Analytics and Policy*
+
+
+# Abstract
+Research in recent decades has explored the impact of advancements in healthcare legislation in the United States on access to mental health and addictions treatment. While much of this research has focused on Medicaid expansion, the present study analyzes the relationship between health insurance and access to mental health treatment by comparing public and private insurance coverage on two indicators of access: perceived unmet mental health needs and mental health treatment utilization. This analysis employs logistic regression to reveal that while Americans with public health insurance are less likely than those with private health insurance to report unmet mental health needs, they are also less likely to have utilized any mental health treatment in the previous year. The findings of this study indicate the role of insurance coverage in mental health treatment access is complex and not simply a matter of the insurance source. Policymakers should consider barriers beyond insurance and cost to advocate for mental healthcare access.
+
+
+```{r setup, include=FALSE}
+
+library(stargazer)
+library(tidyverse)
+library(sandwich)
+library(lmtest)
+library(treemap)
+
+# Import data
+setwd("~/Documents/GitHub/capstone/data")
+data_all <- read.csv("nsduh_2021_final.csv",
+                 stringsAsFactors=TRUE)
+data_all <- as.data.frame(data_all)
+data_subset <- read.csv('nsduh_2021_final_subset.csv',
+                        stringsAsFactors=TRUE)
+data_subset <- as.data.frame(data_subset)
+
+```
+
+
+
+# Introduction
+Once taboo, mental health challenges and treatments are discussed more and more in contemporary life, perhaps due in part to the pervasiveness of social media platforms like Instagram and TikTok which connect people from around the world based on common interests and struggles. With so many people across the spectrum of humanity becoming more aware about mental health, new apps, products and services have sprung up to meet the demand for support. The gold standard, though, is mental healthcare that includes medication and talk therapy by providers with a wide array of backgrounds including medicine, psychology, counseling and social work. However, many are unable to access these services, and their mental health challenges prevail.
+
+Health insurance provides a pathway for consumers to access and utilize mental health treatment. With adequate coverage, Americans can elect to see mental healthcare providers, be assessed and receive diagnoses, take psychiatric medications, and participate in therapeutic interventions to improve their mental well-being. If health insurance does not adequately cover mental health treatment, many folks must opt out of treatment, even if they need it, when they cannot afford the cost on their own. Those treatments would enable people with mental health challenges to work, attend school, care for their families, and support their communities, making access to mental healthcare an important policy concern.
+
+Healthcare legislation has remained a top priority for generations, with numerous debates, advancements, and repeals, including mental health parity laws, at both federal and state levels. Research in recent decades has explored the impact of changes to healthcare legislation in the United States on access to mental health and addictions treatment. These studies have produced a myriad of findings, some of which contradict others, leaving many questions lingering about the mental health outcomes of healthcare and mental health parity legislation. Overall, the literature has yet to explore mental healthcare access based on insurance type. Understanding this relationship could guide future legislation as healthcare reform continues to draw controversy and many Americans are unable to access the care they need.
+
+This paper seeks to explore the relationship between health insurance type (public or private) and mental healthcare access. Federal healthcare programs historically contain progressive mental health parity, and Medicare, Medicaid and military insurance programs are intended to insure the most vulnerable populations. Meanwhile, private health insurance is less regulated. Therefore, public health insurance was expected to provide better coverage for mental healthcare than private health insurance and lead to increased access, operationalized as, first, a lack of unmet mental health needs, and second, mental health treatment utilization. The study employs logistic regression analysis to explore these relationships.
+
+The analysis in this study reveals two key findings. First, public health insurance coverage results in fewer unmet mental health needs. Second, private health insurance coverage results in more mental health treatment utilization. These findings, though they appear to be contradictory, indicate a significant relationship between health insurance and access to mental healthcare. The study also considers the self-reported reasons for unmet mental health needs to reveal barriers other than insurance coverage or cost. This paper serves as a starting point for legislators, healthcare providers, and policy researchers to explore the role of insurance and other barriers to mental healthcare access, which should inform policy change that will improve access regardless of insurance type.
+
+This paper will first outline the historical context of mental healthcare legislation in the United States, as well as a summary of the research conducted over the past few decades which attempted to draw relationships between legislation and mental health outcomes. Then, a description of the data will be provided with an overview of the methods used in the analysis. Finally, the findings of the analysis and the implications of the study will be discussed.
+
+# Literature Review
+Insurance coverage for mental healthcare has been a topic of debate among academics, clinicians, and politicians alike for decades. Experts view financial constraints as a major barrier to access to mental healthcare, and the gap in treatment is related to poor physical health and economic outcomes that impact families, communities, and the country as a whole. With recent advancements in healthcare legislation, researchers have attempted to evaluate impacts on mental healthcare access and mental health outcomes, with mixed results.
+
+## Health Insurance as a Barrier to Mental Healthcare Access
+Mental healthcare has access issues beyond affordability: racial disparities, stigma, and unemployment (potentially linked to a loss of health insurance) are some of the factors linked to a lack of mental healthcare access according to current research (Coombs et al., 2021). Research prior to the passage of the Affordable Care Act (ACA) identified health insurance to be a significant barrier to mental healthcare access. In the mid-2000s, a survey of primary care physicians concluded that lack of coverage or inadequate coverage were among the important barriers to mental healthcare access, in addition to a shortage of mental healthcare providers (Cunningham, 2009). Furthermore, a study in 2009 found that uninsured children were more likely to have unmet mental health needs than insured children, and that children covered by public health insurance programs were less likely to have unmet health needs than children covered by private health insurance plans (DeRigne et al., 2009). Expert weigh-ins and empirical research seem to come to the same conclusion: a lack of health insurance coverage for mental healthcare is a barrier to mental health treatment access.
+
+Mental healthcare has historically been treated as distinct from medical care in terms of financing (Carpenter, 2005). However, the relationship between mental health and physical health is well-established. One study found that individuals with mental health challenges were less likely to have regular access to healthcare (Coombs et al., 2021), and another found that individuals with mental illness were more likely not to have health insurance, especially if their mental illness was considered severe (McAlpine and Mechanic, 2000). Workers with mental illness are more likely to lose employer-provided health insurance due to job loss and temporary or permanent unemployment (Sturm et al., 1999). Prevalence and severity of mental illness are correlated with age, and the most vulnerable group, age 25-34, is also least likely to be insured (Kessler et al., 1994). While causation may not be established, it seems that mental health and medical care are inextricably linked.
+
+From the earliest days of health insurance all the way to the Mental Health Parity Act of 1996, health insurance plans have limited coverage for mental health or substance abuse treatment, if those services were included at all (Barry et al., 2010). For example, mental health benefits included in Medicare, Medicaid, and most private health insurance plans have historically had stricter limits on outpatient visits and hospital days compared to medical/surgical benefits (Sharfstein, 1993). These trends seemed to indicate that coverage for mental health treatment was less important, or perhaps more risky, than coverage for medical treatment.
+
+Even despite several legislative steps to improve insurance coverage, lack of access to mental healthcare persists. Mental healthcare providers may not accept public or private insurance plans for a variety of reasons. For example, psychiatrists, who are medical doctors, opt to accept health insurance plans at much lower rates than other types of physicians (Bishop et al., 2014), and professional counselors are limited in being reimbursed for services because they are not included in the Medicare program (although new legislation taking effect in 2024 will allow counselors to be reimbursed through Medicare) (Westcott et al., 2023). The complex landscape of insurance, premiums and deductibles, in-network and out-of-network benefits, and reimbursement have perhaps de-incentivized the use of insurance for both patients and providers.
+
+## Legislation and Outcomes
+Mental healthcare insurance legislation has a long and complicated history. As early as 1961, President John F. Kennedy’s administration established requirements for federal employee insurance to cover psychiatric illnesses under the Federal Employees Health Benefits Program (FEHBP), although coverage was scaled back significantly by 1975 (Barry et al., 2010). State legislation, however, picked up in the 1970s and ‘80s, establishing minimum benefits for treatment of substance abuse, mental illness, or both, in 38 states (Barry et al., 2010).
+
+### Mental Health Parity Act
+Since the 1990s, federal and state legislation have taken steps to remove barriers and increase access to mental healthcare through insurance coverage equal to medical and surgical benefits. Experts in the 1990s called for research to “articulate the case for complete coverage of mental illness and substance abuse” and outlined a non-discriminatory approach to mental health parity: eliminating differences between mental healthcare coverage and medical/surgical coverage (Sharfstein et al., 1993). They argued that contemporary approaches to healthcare fell short of the principles of mental health parity (Sharfstein et al., 1993). 
+
+The Mental Health Parity Act was first introduced in Congress in 1992, and then reintroduced during President Bill Clinton’s push for healthcare reform (Barry et al., 2010). Despite its bipartisan support, negotiations failed repeatedly due to concerns about what parity might cost in terms of health insurance premiums (Barry et al., 2010). Studies ultimately showed that premiums would increase by less than 1%, and the act was signed into law in 1996 (Barry et al., 2010). (It should be noted that the Mental Health Parity Act did not require plans to cover mental health or substance abuse treatment; only that, if it were covered, it must be equal to medical coverage in terms of financial requirements and treatment limits (Barry et al., 2010).) In 1999, President Clinton moved to offer full parity for mental health and substance abuse treatment under the FEHBP, which allowed the opportunity to evaluate the cost of mental health parity, confirming that premiums increased by only about 0.9% (Barry et al., 2010).
+
+Despite its symbolic victory, the Mental Health Parity Act was limited in scope and easily circumvented by insurance firms (Kjorstad, 2003). Still, state parity laws grew in number over the next decade, though they varied greatly and did not apply to self-insured firms (Barry et al., 2010). In 2008, federal legislation was passed to strengthen the Mental Health Parity Act, which particularly impacted states where mental health coverage was mandated (Lang, 2013).
+
+Several studies evaluated the effects of state-mandated mental health insurance by measuring state suicide rates, as an indicator of mental health outcomes. A study in 2006 compared state suicide rates between 1981 and 2000, before and after state legislation and between states with and without state legislated mental health parity, concluding that the mental health parity mandates of the time were not effective in reducing suicide rates (Klick and Markowitz, 2006). Another study, with a somewhat later timeline of 1990 to 2004, concluded that states with parity mandates had suicide rates 5% lower than those without mandates (Lang, 2013). Contemporary research continues to show inconclusive and mixed results on the impact of mental healthcare legislation on suicide rates (Ortega, 2022).
+
+One study on healthcare reform between 1996 and 1998 concluded that individuals with mental health challenges were more likely to lose insurance or have reduced benefits (Sturm and Wells, 2000). A later study evaluated changes in coverage between 1999 and 2010, concluding that people with mental health challenges in 2010 were more likely to have public insurance than private compared to the turn of the millennium (Rowan et al., 2013). They also found that costs as a barrier to mental healthcare had increased among those without insurance and those with private insurance who had serious mental illness (Rowan et al., 2013). There was more work to be done, and researchers, clinicians and politicians on both sides of the aisle continued to advocate for comprehensive mental health parity as healthcare reform approached the pivotal era of Obamacare.
+
+### Affordable Care Act
+The Affordable Care Act (ACA), colloquially known as Obamacare, included several provisions that impacted mental healthcare. The sweeping legislation expanded Medicaid eligibility as well as health insurance coverage for dependents up to age 26, and it addressed adverse selection, an insurance phenomenon which increases costs for those with chronic mental illness (Garfield and Druss, 2012). In 2012, the Supreme Court ruled that the Medicaid expansion provision of the ACA must be left up to the states (Ortega, 2022). While the dependents provision in the ACA increased the use of mental healthcare by young adults (Lee and Kim, 2020), evaluation of marketplace plans in comparison to other plans found that they were similar in terms of mental health coverage but that marketplace plans had narrower provider networks (Stewart et al., 2018). The legislation, regardless of the changes to mental healthcare access, did reduce severe mental distress among individuals with pre-existing physical health conditions (Hampton and Lenhart, 2022).
+
+Medicaid expansion, prior to the ACA from 1998 to 2011, “did not substantially increase mental health service utilization,” though out-of-pocket costs decreased (Golberstein and Gonzales, 2015). Still, researchers were optimistic about the large number of uninsured people who would become eligible for Medicaid via the ACA, and one study predicted a 40% increase in mental healthcare utilization (Ali et al., 2016). Recent studies on the impact of Medicaid expansion in opt-in states since the ACA was enacted suggest that mental health treatment utilization has increased for treatment of substance use (Andrews et al., 2019), trauma, anxiety, conduct and depressive disorders (Ortega, 2022), and that community mental health centers and their patients have benefited most from the increase in Medicaid reimbursement (Tilhou et al., 2020). Expansion of Medicaid coverage due to the ACA seems to have increased access to mental health treatment.
+
+## Present Study
+The present study seeks to evaluate the current state of mental healthcare access and its relationship to insurance coverage. While several studies have sought to evaluate the impacts of healthcare legislation on access to mental health treatment, access based on insurance type (for instance, Medicare, Medicaid, and employer-provided insurance, or of course, uninsured) has not been explored comprehensively. Evaluating insurance-type-based access can guide future legislation as the healthcare reform battle wages on and barriers to mental healthcare continue to leave many without vital support.
+
+# Data and Methods
+## Data Source: National Survey on Drug Use and Health
+Data used in this analysis draws from the 2021 National Survey on Drug Use and Health (NSDUH). This survey data was collected by the Substance Abuse and Mental Health Services Administration, known as SAMHSA, a branch of the United States Department of Health and Human Services. The full dataset includes nearly 3,000 variables (survey responses and imputed or re-coded values) and about 58,000 observations (individual respondents). The survey measures the “prevalence and correlates of substance abuse and mental health issues in the United States” (Center for Behavioral Health Statistics and Quality, 2022). Variables in the dataset include demographic, substance use, mental health, and geographical information for individual survey respondents. The sample includes individuals from all 50 states and DC.
+
+## Variables
+### Health Insurance
+Health insurance sources were categorized into the following groups, based on survey responses: “Public” includes Medicaid, Medicare, and military health insurance programs; “Private” includes employer-provided group health insurance and “other” private health insurance; “Unknown” includes “not otherwise specified” health insurance and missing responses; and “None” includes responses that explicitly state the respondent does not have health insurance.
+
+Figure 1 shows the relative breakdown of insurance types in the NSDUH survey dataset. The largest group of respondents were covered by employer-provided private health insurance (26,334 respondents), while 19,798 respondents were covered by a public-funded health insurance program. There was incomplete or missing health insurance information for 4,666 respondents, and 4,898 respondents explicitly reported not having health insurance at all. For the analysis, respondents in the “Unknown” category were omitted.
+
+
+``` {r, echo=FALSE}
+
+treemap_data <- data_all
+treemap_data$insurance <- fct_recode(data_all$insurance, 'employer' = 'private/employer')
+insurance_type <- c('public', 'public', 'public', 'none', 'unknown', 'private', 'private', 'unknown')
+count <- dplyr::count(treemap_data, insurance)
+treemap_data <- data.frame(insurance_type, count)
+
+treemap(treemap_data,
+        index=c("insurance_type","insurance"),
+        vSize="n",
+        type="index",
+        title="Figure 1: Health Insurance Types and Sources",
+        align.labels=list(c('center', 'center'), c('right', 'bottom')),
+        mirror.x=FALSE,
+        mirror.y=TRUE,
+        aspRatio=1,
+        fontcolor.labels = 'black')
+
+```
+
+*Note: Figure 1 shows the relative breakdown of insurance types in the NSDUH survey dataset. Private health insurance is represented by the purple rectangle for employer-provided health insurance, and the blue sliver represents non-employer-provided private health insurance. Public health insurance is represented in green. The “unknown” category, in pink, includes responses with missing data as well as responses reporting a “not otherwise specified” source of health insurance. The yellow rectangle represents respondents who explicitly reported not having health insurance.*
+
+
+### Demographic Controls
+A number of demographic variables were included in the analysis to control for various factors that may be related to access to mental health treatment, mental health needs, and health insurance coverage. Table 1 summarizes a selection of these characteristics.
+
+**Table 1: Summary of select control variables**
+
+| Variable | Label | N | Percent |
+|:------|:----------|----:|----:|
+| Age | Under 18 | 10,743 | 18.5% |
+|| 18 to 25 | 13,979 | 24.1% |
+|| 26 to 64 | 27,874 | 48.0% |
+|| 65 and over | 5,438 | 9.4% |
+| Sex | Female | 31,643 | 54.5% |
+|| Male | 26,391 | 45.5% |
+| Education Level | No HS diploma | 15,105 | 26.0% |
+|| HS diploma | 11,278 | 19.4% |
+|| Some college/Associate degree | 14,269 | 24.6% |
+|| Bachelor degree or higher | 17,382 | 30.0% |
+| Race/Ethnicity | Hispanic | 9,929 | 17.1% |
+|| Non-Hispanic Asian | 3,234 | 5.6% |
+|| Non-Hispanic Black | 6,743 | 11.6% |
+|| Non-Hispanic Multiracial | 2,524 | 4.3% |
+|| Non-Hispanic Native American / Alaskan Native | 587 | 1.0% |
+|| Non-Hispanic Native Hawaiian / Pacific Islander | 226 | 0.4% |
+|| Non-Hispanic White | 34,791 | 59.9% |
+| Household Income | Less than $20,000 | 9,976 | 17.2% |
+|| $20,000 - $49,999 | 15,608 | 26.9% |
+|| $50,000 - $74,999 | 8,640 | 14.9% |
+|| $75,000 or more | 23,810 | 41.0% |
+
+*Note: Table 1 shows the frequency and percentages of five of the 12 control variables used in the study. Each of these variables is either categorical or ordinal. Missing data was included in the total number of responses, so some variables’ percentages may not add up to 100.*
+
+
+### Access to Mental Healthcare
+Access to mental health treatment was operationalized for this study by two binary variables: perceived unmet mental health needs in the past 12 months (0 = no unmet need, 1 = unmet need) and mental health treatment utilization in the past 12 months (0 = no mental health treatment, 1 = at least one instance of mental health treatment). About 12% (5,537) of respondents reported having an unmet mental health need, and about 23% (10,436) of respondents reported utilizing any level of mental health treatment at least once in the past 12 months.
+
+## Methods: Logistic Regression
+This analysis employs binary logistic regression to explore the relationship between mental healthcare access and health insurance. This approach was selected to accommodate the binary nature of the dependent variables and multiple categorical and numeric independent variables.
+
+## Hypotheses
+The hypotheses for this analysis are:
+
+1. the odds of having an unmet mental health need will be lower for those with public health insurance than private health insurance or no insurance; and
+
+2. the odds of having utilized mental health treatment will be higher for those with public health insurance than private health insurance or no insurance.
+
+These hypotheses are based on previous research suggesting that public health insurance programs, through legislation, were intended to increase mental healthcare access to vulnerable populations. The analysis attempts to explain mental healthcare access in terms of health insurance coverage in order to evaluate the current state of mental healthcare legislation in the United States.
+
+# Results
+## Unmet Mental Health Needs Lower for Public-Insured Respondents
+Logistic regression was used to analyze the relationship between perceived unmet mental health needs in the past 12 months and health insurance type. It was found that, holding demographic variables constant, the odds of having a perceived unmet mental health need in the past 12 months decreased by 24% (95% CI [0.70, 0.83], p < 0.001) for respondents with public health insurance compared to those with private health insurance. Coefficients for every demographic variable used as a control was statistically significant, indicating that these factors are important predictors of unmet mental health needs. Table 2 summarizes the regression results. Figure 2 shows the rate of perceived unmet mental health needs by insurance type based on regression estimates.
+
+```{r, echo=FALSE}
+
+barplot_data <- filter(data_all, !is.na(AMHTXND2))
+barplot_data <- filter(barplot_data, !is.na(AMHSVTYP4))
+barplot_data <- mutate(barplot_data, 
+                       insurance_type = fct_relevel(insurance_type, 
+                                                    'public', 'private',
+                                                    'unknown', 'none'))
+barplot_data <- filter(barplot_data, insurance_type != 'unknown')
+barplot_data <- filter(barplot_data, !is.na(AMHTXYR4))
+
+ggplot(barplot_data, aes(fill=factor(AMHTXND2), x=insurance_type)) +
+  geom_bar(position='fill', stat='count')+
+  labs(title="Figure 2: Unmet Mental Health Needs by Insurance Type",
+       x="Insurance Type",
+       y="Percent")+
+  scale_y_continuous(labels=c('0', '25', '50', '75', '100'))+
+  scale_fill_manual(name="Unmet need", 
+                      labels=c('No','Yes'), 
+                      values=c("#80B1D3", "#FDB462"))+
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black"))
+
+
+```
+
+*Note: Figure 2 shows the rate of perceived unmet mental health needs by insurance type based on regression estimates. While respondents with private insurance report similar rates of unmet needs to those without insurance, fewer respondents with public health insurance reported unmet needs.*
+
+Logistic regression was used to analyze the relationship between perceived unmet mental health needs in the past 12 months and health insurance type compared to having no insurance. It was found that, holding demographic variables constant, the odds of having a perceived unmet mental health need in the past 12 months decreased by 23% (95% CI [0.69, 0.87], p < 0.001) for respondents with public health insurance compared to those with no health insurance. The difference in unmet mental health needs between respondents with private health insurance compared to those with no health insurance was not statistically significant. Table 2 summarizes the regression results.
+
+Figure 3 breaks down perceived unmet mental health needs by insurance to reveal that less than 5% of respondents with Medicare reported an unmet mental health need, while others in the public category perceived an unmet need at slightly higher rates than those with private insurance or no insurance. This suggests that categorizing health insurance as public or private may not be the best way to explore health insurance as it pertains to mental health treatment access.
+
+```{r, echo=FALSE}
+
+ggplot(barplot_data, aes(fill=factor(AMHTXND2), x=insurance)) +
+  geom_bar(position='fill', stat='count')+
+  labs(title="Figure 3: Unmet Mental Health Needs by Insurance",
+       x="Insurance Type",
+       y="Percent")+
+  scale_y_continuous(labels=c('0', '25', '50', '75', '100'))+
+  scale_fill_manual(name="Unmet need", 
+                    labels=c('No','Yes'), 
+                    values=c("#80B1D3", "#FDB462"))+
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black"))
+
+
+```
+
+*Note: Figure 3 expands health insurance types to show the subcategories included in the analysis and the prevalence of perceived unmet mental health needs for respondents. Based on regression estimates, respondents with Medicare are least likely to report an unmet mental health need, but others in the public insurance category, Medicaid and military insurance coverage, have higher rates of unmet mental health needs compared to those with private insurance.*
+
+## Mental Health Treatment Utilization Lower for Public-Insured Respondents
+Logistic regression was used to analyze the relationship between mental health treatment utilization in the past 12 months and health insurance type. It was found that, holding demographic variables constant, the odds of having utilized any mental health treatment decreased by 13% (95% CI [0.81, 0.93], p < 0.001) for respondents with public insurance compared to those with private insurance. Again, the coefficient for every demographic variable included as a control in the model was statistically significant, indicating that these factors are important predictors of mental health treatment utilization. Table 2 summarizes the regression results. Figure 4 shows the rate of mental health service utilization by insurance type based on regression estimates.
+
+```{r, echo=FALSE}
+
+ggplot(barplot_data, aes(fill=factor(AMHTXYR4), x=insurance_type)) +
+  geom_bar(position='fill', stat='count')+
+  labs(title="Figure 4: Mental Health Treatment Utilization by Insurance Type",
+       x="Insurance Type",
+       y="Percent")+
+  scale_y_continuous(labels=c('0', '25', '50', '75', '100'))+
+  scale_fill_manual(name="Treatment Utilization", 
+                      labels=c('No',
+                               'Yes'),
+                    values=c("#80B1D3", "#FDB462"))+ 
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black"))
+
+
+```
+
+*Note: Figure 4 shows the percentage of respondents in each health insurance category that did or did not utilize mental health treatment within the past 12 months, based on regression estimates. While those with insurance utilized services at about twice the rate of those without it, the increase in utilization among privately-insured respondents compared to those with public health insurance appears quite small. However, logistic regression analysis revealed that this difference is statistically significant.*
+
+
+Logistic regression was used to analyze the relationship between perceived mental health treatment utilization in the past 12 months and health insurance type compared to having no insurance. It was found that, holding demographic variables constant, the odds of having utilized any mental health treatment in the past 12 months increased by 126% (95% CI [2.03, 2.52], p < 0.001) for respondents with private health insurance and increased by 97% (95% CI [1.77, 2.20], p < 0.001) for respondents with public health insurance compared to those with no health insurance. Table 2 summarizes the regression results. While having health insurance greatly increases the odds of utilizing mental health treatment, the benefit appears to be greater for individuals with private health insurance than public insurance.
+
+**Table 2: Summary of Regression Results**
+
+| Dependent Variable | Independent Variable (Health Insurance) | Reference Level (Health Insurance) | Coefficient | Standard Error | P-value | Odds Ratio | Lower 95% Confidence Interval | Upper 95% Confidence Interval |
+|:----------------:|:-------:|:-------:|--:|:--:|:--:|:--:|:--:|:--:|:--:|
+| Perceived Unmet Mental Health Need in Past 12 Months | Public | Private | **-0.269** | 0.045 | 0.000 | 0.764 | 0.699 | 0.835 |
+|| Public  | None | **-0.261** | 0.060 | 0.000 | 0.771 | 0.687 | 0.865 | 
+|| Private | None | 0.020 | 0.057 | 0.729 | 1.020 | 0.913 | 1.140 | 
+| Mental Health Treatment Utilization in Past 12 Months | Public | Private | **-0.144** | 0.034 | 0.000 | 0.866 | 0.810 | 0.926 | 
+|| Public | None | **0.679** | 0.055 | 0.000 | 1.971 | 1.771 | 2.197 | 
+|| Private | None | **0.815** | 0.055 | 0.000 | 2.260 | 2.033 | 2.515 | 
+
+*Note: Table 2 summarizes the results of binary logistic regression analysis for both unmet mental health needs and mental health treatment utilization by insurance type. The reference level refers to whether the independent variable’s odds ratio is related to having private health insurance or no health insurance. **Bold** values are statistically significant with a P-value < 0.001. All values are rounded to the nearest thousandth.*
+
+
+Figure 5 breaks down the utilization rates of different types of mental health services by insurance type. Notably, respondents with private insurance had the highest rates of outpatient service utilization and the lowest rates of inpatient service utilization, suggesting that outpatient and medication services utilized by this group might mitigate the need for mental health hospitalization, or perhaps that inpatient services are avoided by this group due to a lack of coverage. Respondents with public health insurance saw similar rates of inpatient service utilization compared to those who were uninsured.
+
+The results of these analyses suggest that although there is a relationship between health insurance and access to mental health treatment, the results differ depending on how access is defined. On one hand, public health insurance seems to prevent unmet mental health needs. On the other hand, private health insurance seems to lead to more mental health treatment utilization. Furthermore, it is unclear whether categorizing insurance sources as either public or private is the best way to compare outcomes.
+
+```{r, echo=FALSE, message=FALSE}
+
+treatment_type <- filter(barplot_data, AMHSVTYP4 != '8')
+
+treatment_type$AMHSVTYP4 <- as.factor(treatment_type$AMHSVTYP4)
+treatment_type$AMHSVTYP4 <- fct_recode(treatment_type$AMHSVTYP4,
+                                 'Inpatient only' = '1',
+                                 'Outpatient only' = '2',
+                                 'Prescription meds only' = '3',
+                                 'Inpatient & Outpatient' = '4',
+                                 'Inpatient & Medication' = '5',
+                                 'Outpatient & Medication' = '6',
+                                 'Inpatient, Outpatient, & Medication' = '7')
+treatment_type$AMHSVTYP4 <- fct_relevel(treatment_type$AMHSVTYP4,
+                                        'Inpatient only',  
+                                        'Prescription meds only',
+                                        'Inpatient & Medication',
+                                        'Outpatient & Medication',
+                                        'Inpatient, Outpatient, & Medication',
+                                        'Outpatient only',
+                                        'Inpatient & Outpatient')
+
+plotdata <- treatment_type %>%
+  group_by(insurance_type, AMHSVTYP4) %>%
+  dplyr::summarize(n = n()) %>% 
+  mutate(pct = n/sum(n),
+         lbl = round(pct*100))
+
+ggplot(plotdata, aes(fill=AMHSVTYP4, x=insurance_type, y=pct)) +
+  geom_bar(position='fill', stat='identity')+
+  labs(title="Figure 5: Treatment Utilization by Service Type",
+       x="Insurance Type",
+       y="Percent",
+       fill="Service Type")+
+  scale_y_continuous(labels=c('0', '25', '50', '75', '100'))+
+  scale_fill_brewer(palette = 'Set3')+
+  geom_text(aes(label = paste0(lbl, '%')), 
+            size = 3, 
+            position = position_stack(vjust = 0.5)) +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black"))
+
+
+```
+
+*Note: Figure 5 shows the breakdown of mental health treatment services utilized by respondents with public, private or no health insurance.*
+
+
+## Reasons for Unmet Mental Health Needs
+### Cost- and Insurance-Related Reasons Rarely Reported
+Logistic regression was used to explore the relationship between health insurance type and cost- or insurance-related reasons for not receiving mental health treatment when the respondent perceived an unmet mental health need. The reasons explored included “couldn’t afford the cost,” “health insurance does not cover any mental health treatment,” and “health insurance doesn’t pay enough for mental health treatment.” These analyses, while controlling for demographic variables, did not yield any statistically significant relationship.
+
+Further exploration of reasons for not receiving mental health treatment revealed that very few respondents cited the aforementioned reasons as their top reason for not receiving treatment. Figure 6 shows the frequency of each of the cost- and insurance-related reasons reported by the respondents’ insurance type.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+
+setwd("~/Documents/GitHub/capstone/data")
+data <- read.csv("super-final-data-clean-reasons-notx.csv",
+                 stringsAsFactors=TRUE)
+data <- as.data.frame(data)
+
+data <- mutate(data, no_tx_reason = case_when(
+  AUUNCOST == 1 ~ 'Couldn\'t afford cost', # NO MH TMT COULDN'T AFFORD COST
+  AUUNNCOV == 1 ~ 'Insurance didn\'t cover MH', # NO MH TMT HEALTH INSUR DIDN'T COVER
+  AUUNENUF == 1 ~ 'Not enough insurance coverage' # NO MH TMT NOT ENUF HEALTH INSUR COVERAGE
+))
+
+data$no_tx_reason <- as.factor(data$no_tx_reason)
+
+data$reason_category <- as.factor(data$AUUNRIM2)
+data$reason_category <- fct_collapse(data$reason_category,
+                                     "Cost/Insurance" = c(1,4,5, 18, 41, 42),
+                                     "Stigma" = c(2, 8, 13, 17, 19, 20),
+                                     "Work/Family/Transportation" = c(3, 12, 14, 34),
+                                     "Lack of treatment options" = c(6, 23, 25, 26, 28, 32, 33, 44, 48),
+                                     "COVID-19" = c(60,61,62,63),
+                                     "Mental health symptoms" = c(22, 38),
+                                     "Other" = c(7, 9, 10, 11, 15, 16, 21,
+                                                 24, 27, 29, 38, 40))
+
+plotdata <- data %>%
+  group_by(insurance_type, no_tx_reason) %>%
+  dplyr::summarize(n = n()) %>% 
+  mutate(pct = n/sum(n),
+         lbl = round(pct*100, 2))
+
+plotdata <- subset(plotdata, !is.na(no_tx_reason))
+plotdata <- subset(plotdata, insurance_type != 'unknown')
+plotdata <- subset(plotdata, insurance_type != 'none')
+
+ggplot(plotdata, aes(fill=no_tx_reason, y=n, x=insurance_type)) +
+  geom_bar(position="stack", stat="identity") +
+  geom_text(aes(label = paste0(lbl, '%')), 
+            size = 3, 
+            position = position_stack(vjust = 0.5)) +
+  scale_fill_brewer(palette = 'Set3') +
+  labs(title='Figure 6: Unmet MH need due to cost or insurance',
+       x='Insurance Type',
+       y='count',
+       fill='Reason')+
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black"))
+
+
+```
+
+*Note: Figure 6 shows the frequency of “Yes” responses to whether or not cost or insurance coverage was a reason why the respondent had an unmet mental health need.*
+
+One survey question asked the respondent to identify a single main reason why they had an unmet mental health need. It is important to note that only 1,073 (about 19%) of 5,537 respondents with unmet mental health needs responded to this question on the survey. Figure 7 shows that cost- and insurance-related reasons were reported at similar rates for those with public and private health insurance, with specific reasons grouped into categories including Cost/Insurance, Stigma, Lack of treatment options, COVID-19, etc. A chi-squared test for independence between these broad categories of reasons and insurance type found the relationship was not statistically significant.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+
+no_tx <- subset(data, tx_util == 0)
+unmet <- subset(data, unmet_need == 1)
+
+## INSURANCE TYPE, exclude "unknown"
+unmet_instype_known <- subset(unmet, insurance_type != 'unknown')
+unmet_instype_known$insurance_type <- relevel(unmet_instype_known$insurance_type, 
+                                             ref = "none")
+## INSURANCE TYPE, only private vs. public
+unmet_instype_priv_pub <- subset(unmet_instype_known, insurance_type != 'none')
+unmet_instype_priv_pub$insurance_type <- relevel(unmet_instype_priv_pub$insurance_type, 
+                                                ref = "private")
+unmet_plotdata <- subset(unmet, !is.na(AUUNRIM2))
+unmet_plotdata <- subset(unmet_plotdata, AUUNRIM2 != 70)
+
+unmet_plotdata <- mutate(unmet_plotdata, reason = case_when(
+  AUUNRIM2 == 1 ~ 'You couldn\'t afford the cost',
+  AUUNRIM2 == 2 ~ 'Concerned neighbors/community have neg opinion',
+  AUUNRIM2 == 3 ~ 'Concerned might have a neg effect on your job',
+  AUUNRIM2 == 4 ~ 'Your health ins doesnt cover any mental hlth tmt',
+  AUUNRIM2 == 5 ~ 'Your health ins doesnt pay enuf for ment hlth tmt',
+  AUUNRIM2 == 6 ~ 'You did not know where to go to get services',
+  AUUNRIM2 == 7 ~ 'Concerned info might not be kept confidential',
+  AUUNRIM2 == 8 ~ 'Concerned might be committed/take medicine',
+  AUUNRIM2 == 9 ~ 'You didn\'t think you needed treatment at the time',
+  AUUNRIM2 == 10 ~ 'You thought could handle problem w/o treatment',
+  AUUNRIM2 == 11 ~ 'You didn\'t think treatment would help',
+  AUUNRIM2 == 12 ~ 'Didn\'t have time (b/c of job, childcare, other)',
+  AUUNRIM2 == 13 ~ 'Didn\'t want others to find out you needed treatmnt',
+  AUUNRIM2 == 14 ~ 'No transportation/too far away/hrs inconvenient',
+  AUUNRIM2 == 15 ~ 'Some other reason or reasons',
+  AUUNRIM2 == 16 ~ 'Afraid too painful/unpleasant/afraid of diagnosis',
+  AUUNRIM2 == 17 ~ 'Others dissuaded/didn\'t want you to/unsupportive',
+  AUUNRIM2 == 18 ~ 'You do not have any health insurance coverage',
+  AUUNRIM2 == 19 ~ 'Ashamed, embarrassed, afraid, or sign of weakness',
+  AUUNRIM2 == 20 ~ 'You were too stubborn/prideful to go',
+  AUUNRIM2 == 21 ~ 'You did not want to; reason unspecified',
+  AUUNRIM2 == 22 ~ 'Unmotivated/depressed/confused/angry/unworthy',
+  AUUNRIM2 == 23 ~ 'Services unavailable in your area/services limited',
+  AUUNRIM2 == 24 ~ 'Didn\'t want to talk about your problems w/anyone',
+  AUUNRIM2 == 25 ~ 'Didn\'t like how treated/don\'t like Dr(s)/hospitals',
+  AUUNRIM2 == 26 ~ 'Attempted to get trmt,unsuccessful in finding help',
+  AUUNRIM2 == 27 ~ 'Concerned how the court system would treat you',
+  AUUNRIM2 == 28 ~ 'No program/counselor competent/comfortable with',
+  AUUNRIM2 == 29 ~ 'Just never went/made appointment/arrangements',
+  AUUNRIM2 == 32 ~ 'Too much red tape/hassle to get services',
+  AUUNRIM2 == 33 ~ 'There were no openings/long waiting list/delays',
+  AUUNRIM2 == 34 ~ 'You had other problems/issues to deal with',
+  AUUNRIM2 == 38 ~ 'Too afraid to leave the house',
+  AUUNRIM2 == 40 ~ 'Unready to seek help/deal w/issues;othrwise unspfd',
+  AUUNRIM2 == 41 ~ 'Preferrd providr wont/may not accept hlth ins plan',
+  AUUNRIM2 == 42 ~ 'Health ins wont accept preferred provider/tmt',
+  AUUNRIM2 == 44 ~ 'Services desired unavailable/currently ineligible',
+  AUUNRIM2 == 48 ~ 'Looking/need to find/don\'t have counselor/Dr/prgm',
+  AUUNRIM2 == 60 ~ 'COVID-19; otherwise unspecified',
+  AUUNRIM2 == 61 ~ 'COVID-related access/closures/caseloads/waitlists',
+  AUUNRIM2 == 62 ~ 'COVID-related telehealth dislike/lack of privacy',
+  AUUNRIM2 == 63 ~ 'Fear of exposure to COVID-19'
+))
+
+unmet_instype_priv_pub_reasons <- subset(unmet_instype_priv_pub, !is.na(AUUNRIM2))
+unmet_instype_priv_pub_reasons <- subset(unmet_instype_priv_pub_reasons, AUUNRIM2 != 70)
+unmet_instype_priv_pub_reasons$insurance_type <- fct_drop(unmet_instype_priv_pub_reasons$insurance_type)
+
+unmet_instype_priv_pub_reasons$reason_category <- as.factor(unmet_instype_priv_pub_reasons$AUUNRIM2)
+unmet_instype_priv_pub_reasons$reason_category <- fct_collapse(unmet_instype_priv_pub_reasons$reason_category,
+                                                               "Cost/Insurance" = c(1,4,5, 18, 41, 42),
+                                                               "Stigma" = c(2, 8, 13, 17, 19, 20),
+                                                               "Work/Family/Transportation" = c(3, 12, 14, 34),
+                                                               "Lack of treatment options" = c(6, 23, 25, 26, 28, 32, 33, 44, 48),
+                                                               "COVID-19" = c(60,61,62,63),
+                                                               "Mental health symptoms" = c(22, 38),
+                                                               "Other" = c(7, 9, 10, 11, 15, 16, 21,
+                                                                           24, 27, 29, 38, 40))
+
+plotdata <- unmet_instype_priv_pub_reasons %>%
+  group_by(insurance_type, reason_category) %>%
+  dplyr::summarize(n = n()) %>%
+  mutate(pct = n/sum(n),
+         lbl = round(pct*100))
+
+ggplot(plotdata, aes(fill=reason_category, x=insurance_type, y=n)) +
+  geom_bar(position='stack', stat='identity') +
+  geom_text(aes(label = paste0(lbl, '%')), 
+            size = 3, 
+            color='black',
+            position = position_stack(vjust = 0.5)) +
+  labs(x='Insurance Type',
+       y='count',
+       fill='Reason Category',
+       title='Figure 7: Barriers to Treatment by Insurance Type') +
+  scale_fill_brewer(palette = 'Set3') + # Pastel1/2 or Set3 ?
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black"))
+
+
+```
+
+*Note: Figure 7 shows respondents’ main reasons for having an unmet mental health need, categorized into common themes. The most common theme, at 42% for respondents with public or private insurance, was reasons related to a lack of treatment options, which included the top reason reported: no openings, long waiting list, or delays. Cost or insurance coverage was the main reason for only 8% of respondents with either private or public health insurance.*
+
+
+### Top Reasons for Unmet Mental Health Needs
+Figure 8 shows the top 8 reasons that respondents gave as their main reason why they had not received mental health treatment in the past year despite feeling that they needed it. Notably, “do not have health insurance coverage” was the main reason for 42 respondents, but no other cost- or insurance-related reasons appear in the top 8 reasons given. Instead, a majority of respondents (186) reported that a lack of openings, waiting lists or delays were the main reason they did not receive treatment. This, along with some of the other top responses, suggests that respondents did seek help but ultimately were not treated.
+
+```{r, echo=FALSE}
+
+unmet_plotdata %>% 
+  group_by(reason) %>%
+  dplyr::summarise(freq = n()) %>%
+  dplyr::arrange(desc(freq)) %>%
+  slice(1:8) %>%
+  ggplot(., aes(y=reorder(reason, +freq), x=freq, fill=reason)) + geom_bar(stat='identity') +
+  scale_fill_brewer(palette = 'Set3') +
+  labs(title='Figure 8: Top Reasons for Unmet MH Need',
+       x= 'count',
+       y= 'Reason') +
+  theme(legend.position = 'none',
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black"))
+
+
+```
+
+*Note: Figure 8 displays the top 8 responses to what was the most important reason why respondents had an unmet mental health need in the past 12 months. The top reason, with over 186 respondents selecting it as their main reason, was that there were no openings, long waiting list, or delays which prevented them from receiving mental health treatment. The other top reasons had far fewer responses, with the 2nd and 3rd highest reasons being the main reason for 64 respondents each. The only cost- or insurance-related reason to appear in the top reasons is not having any health insurance coverage (42 respondents).*
+
+Other trends in reasons respondents did not receive treatment include social factors like shame and stigma, as well as mental health symptoms themselves, such as depression, being a barrier to getting treatment. Common reasons also included concerns about COVID-19, being too busy for treatment, and challenges with finding a good fit in a program or counselor. This exploration suggests that access to mental health treatment is more often impacted by factors aside from an individual’s source of health insurance.
+
+# Conclusion
+This analysis attempted to prove that public health insurance provides increased access to mental healthcare compared to private health insurance coverage. The findings indicate a more complicated relationship between health insurance and mental healthcare access. When defining access as a lack of unmet mental health needs, public health insurance, and in particular Medicare, appears to improve access. However, when defining access as instances of treatment utilization, private health insurance appears to improve access. With these contrasting results, it is no surprise that most consumers blame their unmet mental health needs on reasons other than insurance coverage and cost.
+
+These findings are consistent with the broader literature on this topic, as past and recent research has failed to draw a clear and consistent connection between healthcare legislation and mental health outcomes, with some studies producing results that directly contradict one another. This paper, though, introduces new evidence about the complexities of this relationship by identifying significant differences in mental health outcomes between publicly and privately insured Americans.
+
+Despite the use of control variables in this analysis, limitations to the generalizability of it still exist. The survey data utilized in the study consists of self-reported information which may be inaccurate, including responses about insurance coverage. Although the survey was conducted across a nationally representative sample of United States residents, the dataset contained a large amount of missing data, which can impact how well the subset of information explored in this analysis truly captures the reality for most Americans. It is also important to note that the binary variables used to represent mental healthcare access were imbalanced, such that a much larger proportion of respondents did not identify an unmet mental health need or did not report utilizing mental health treatment. Still, the findings show that health insurance coverage does impact these outcomes to some degree, and this phenomenon should be explored further.
+
+While legislators continue to debate the merits of the Affordable Care Act, Medicaid expansion, and more progressive policies like Medicare for All, the findings of this study contribute to knowledge about mental healthcare access that can inform the legislative path forward. Beyond the merits of increasing access to public health insurance coverage, policymakers should consider the benefits and shortcomings of that coverage as evidenced by this research in order to advance mental healthcare access for those who are eligible for publicly-funded health insurance. More broadly, policymakers should revisit mental health parity legislation to advance access for the largest portion of Americans who are insured through private and group insurance plans, as limited access to mental healthcare persists.
+
+This study introduces new questions to be explored. First, how should mental healthcare access be measured? The operationalization of mental healthcare access in this analysis produced contradictory results, suggesting that one or both of the measures may have been inadequate or inappropriate. Experts should develop a measure for mental healthcare access to accurately determine its relationship to healthcare policy. Secondly, the NSDUH results suggest that consumers view insufficient provider offerings and lack of options to be more substantial barriers to mental healthcare access than cost and insurance combined. These barriers must be investigated further to inform policies to address them. Finally, the relationships uncovered by this paper should be investigated further with additional measures related to unmet mental health needs and mental health treatment utilization. Medical records would be a helpful addition to exploring these relationships, and intentional survey design can more clearly uncover these phenomena.
+
+This study adds a single piece to the puzzle of barriers to mental healthcare access. The relationship between access and insurance coverage is real, albeit complex. Legislators, healthcare providers, and researchers can use this finding as a catalyst for policy change that will increase access to mental healthcare and improve the well-being of all Americans.
+
+# References
+
+Ali, M. M., Teich, J., Woodward, A., & Han, B. (2016). The Implications of the Affordable Care Act for Behavioral Health Services Utilization. Administration and Policy in Mental Health and Mental Health Services Research, 43(1), 11-22. https://doi.org/10.1007/s10488-014-0615-8
+
+Andrews, C. M., Pollack, H. A., Abraham, A. J., Grogan, C. M., Bersamira, C. S., D'Aunno, T., & Friedmann, P. D. (2019). Medicaid coverage in substance use disorder treatment after the affordable care act. Journal of Substance Abuse Treatment, 102, 1-7. https://doi.org/10.1016/j.jsat.2019.04.002
+
+BARRY, C. L., HUSKAMP, H. A., & GOLDMAN, H. H. (2010). A Political History of Federal Mental Health and Addiction Insurance Parity. The Milbank Quarterly, 88(3), 404-433. https://doi.org/10.1111/j.1468-0009.2010.00605.x
+
+Bishop, T. F., Press, M. J., Keyhani, S., & Pincus, H. A. (2014). Acceptance of Insurance by Psychiatrists and the Implications for Access to Mental Health Care. JAMA Psychiatry, 71(2), 181. https://doi.org/10.1001/jamapsychiatry.2013.2862
+
+Carpenter, C. E. (2005). Financing Mental Health Care. Journal of Financial Service Professionals, 59(6), 32-34. https://search.ebscohost.com/login.aspx?direct=true&AuthType=ip,shib&db=bsu&AN=18716389&site=ehost-live&scope=site&authtype=ip,shib&custid=s3555202
+
+Coombs, N. C., Meriwether, W. E., Caringi, J., & Newcomer, S. R. (2021). Barriers to healthcare access among U.S. adults with mental health challenges: A population-based study. SSM - Population Health, 15, 100847. https://doi.org/10.1016/j.ssmph.2021.100847
+
+Cunningham, P. J. (2009). Beyond Parity: Primary Care Physicians' Perspectives On Access To Mental Health Care. Health Affairs, 28(3/4), W490-W501. https://doi.org/10.1377/hlthaff.28.3.w490
+
+DeRigne, L., Porterfield, S., & Metz, S. (2009). The Influence of Health Insurance on Parent’s Reports of Children’s Unmet Mental Health Needs. Maternal and Child Health Journal, 13(2), 176-186. https://doi.org/10.1007/s10995-008-0346-0
+
+Garfield, R. L., & Druss, B. G. (2012). Health Reform, Health Insurance, and Mental Health Care. Ajp, 169(7), 675-677. https://doi.org/10.1176/appi.ajp.2012.12040506
+
+Golberstein, E., & Gonzales, G. (2015). The Effects of Medicaid Eligibility on Mental Health Services and Out-of-Pocket Spending for Mental Health Services. Health Services Research, 50(6), 1734-1750. https://doi.org/10.1111/1475-6773.12399
+
+Hampton, M., & Lenhart, O. (2022). Access to health care and mental health—Evidence from the ACA preexisting conditions provision. Health Economics, 31(5), 760-783. https://doi.org/10.1002/hec.4473
+
+Kessler, R. C., McGonagle, K. A., Zhao, S., Nelson, C. B., Hughes, M., Eshleman, S., Wittchen, H., & Kendler, K. S. (1994). Lifetime and 12-Month Prevalence of DSM-III-R Psychiatric Disorders in the United States: Results From the National Comorbidity Survey. Archives of General Psychiatry, 51(1), 8-19. https://doi.org/10.1001/archpsyc.1994.03950010008002
+
+Kjorstad, M. C. (2003). The Current And Future State of Mental Health Insurance Parity Legislation. Psychiatric Rehabilitation Journal, 27, 34-42. https://doi.org/10.2975/27.2003.34.42
+
+Klick, J., & Markowitz, S. (2006). Are mental health insurance mandates effective? Evidence from suicides. Health Economics, 15(1), 83-97. https://doi.org/10.1002/hec.1023
+
+Lang, M. (2013). THE IMPACT OF MENTAL HEALTH INSURANCE LAWS ON STATE SUICIDE RATES. Health Economics, 22(1), 73-88. https://doi.org/10.1002/hec.1816
+
+Lee, J., & Kim, J. (2020). The role of health insurance in mental health care for young adults. Applied Economics, 52(42), 4577-4593. https://doi.org/10.1080/00036846.2020.1738326
+
+McAlpine, D. D., & Mechanic, D. (2000). Utilization of specialty mental health care among persons with severe mental illness: the roles of demographics, need, insurance, and risk. Health Services Research, 35(1 Pt 2), 277-292.
+
+Ortega, A. (2022). Medicaid Expansion and mental health treatment: Evidence from the Affordable Care Act. Health Economics, n/ahttps://doi.org/10.1002/hec.4633
+
+Rowan, K., McAlpine, D. D., & Blewett, L. A. (2013). Access And Cost Barriers To Mental Health Care, By Insurance Status, 1999-2010. Health Affairs, 32(10), 1723-30. https://doi.org/10.1377/hlthaff.2013.0133
+
+Sharfstein, S. S., Stoline, A. M., & Goldman, H. H. (1993). Psychiatric care and health insurance reform. The American Journal of Psychiatry, 150, 7-18. https://doi.org/10.1176/ajp.150.1.7
+
+Stewart, M. T., Horgan, C. M., Hodgkin, D., Creedon, T. B., Quinn, A., Garito, L., Reif, S., & Garnick, D. W. (2018). Behavioral Health Coverage Under the Affordable Care Act: What Can We Learn From Marketplace Products? Ps, 69(3), 315-321. https://doi.org/10.1176/appi.ps.201700098
+
+Sturm, R., & Wells, K. (2000). Health insurance may be improving--but not for individuals with mental illness. Health Services Research, 35(1 Pt 2), 253-262.
+
+Sturm, R., Gresenz, C. R., Pacula, R. L., & Wells, K. B. (1999). Datapoints: Labor Force Participation by Persons With Mental Illness. Ps, 50(11), 1407. https://doi.org/10.1176/ps.50.11.1407
+
+Tilhou, A. S., Huguet, N., DeVoe, J., & Angier, H. (2020). The Affordable Care Act Medicaid Expansion Positively Impacted Community Health Centers and Their Patients. Journal of General Internal Medicine, 35(4), 1292-1295. https://doi.org/10.1007/s11606-019-05571-w
+
+Westcott, J. B., Fullen, M. C., & Jordan, J. (2023). Advancing access to Medicare-funded mental health treatment during the opioid epidemic: A counselor advocacy analysis. Journal of Counseling & Development, 101(1), 15-28. https://doi.org/10.1002/jcad.12452
